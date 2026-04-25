@@ -1,0 +1,19 @@
+# Runtime Atlas Docs Repository — .gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor temp files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Build artifacts
+_site/
+.jekyll-cache/
+.jekyll-metadata
+node_modules/
