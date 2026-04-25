@@ -15,11 +15,9 @@ performance profiling, alerting, and session reporting inside a single dockable 
 
 Runtime Atlas is available on the following platforms:
 
-| Platform | Link |
-|----------|------|
-| Unity Asset Store | https://assetstore.unity.com/packages/slug/367424 |
-| itch.io | https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit |
-| Gumroad | https://toolsstudio.gumroad.com/l/runtime-atlas |
+- [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424)
+- [itch.io](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit)
+- [Gumroad](https://toolsstudio.gumroad.com/l/runtime-atlas)
 
 Each platform delivers the same package. Purchase on whichever platform you prefer.
 
@@ -29,7 +27,7 @@ Each platform delivers the same package. Purchase on whichever platform you pref
 
 For questions, bug reports, and feature requests:
 
-- **Discord:** https://discord.gg/g5sNBZHZBd
+- [Discord](https://discord.gg/g5sNBZHZBd)
 - For import and licensing issues, contact support via the platform you purchased from.
 
 ---
@@ -132,8 +130,8 @@ the project's file-system layer. They do not overlap in function and can be used
 independently or together.
 
 **Links:**
-- Source and download: https://github.com/Afterix-Hub/MetaGuard
-- Documentation: https://github.com/toolsstudio/metaguard-docs
+- [MetaGuard](https://github.com/Afterix-Hub/MetaGuard) (source and download)
+- [MetaGuard documentation](https://github.com/toolsstudio/metaguard-docs)
 
 ---
 

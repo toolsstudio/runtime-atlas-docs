@@ -52,9 +52,9 @@ not under this documentation license.
 
 Runtime Atlas is available for purchase at:
 
-- Unity Asset Store: https://assetstore.unity.com/packages/slug/367424
-- itch.io: https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit
-- Gumroad: https://toolsstudio.gumroad.com/l/runtime-atlas
+- [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424)
+- [itch.io](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit)
+- [Gumroad](https://toolsstudio.gumroad.com/l/runtime-atlas)
 
 ---
 

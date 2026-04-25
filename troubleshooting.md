@@ -158,7 +158,7 @@ Or configure a mixer manually. See [Audio Mixer Setup](guides/audio-mixer-setup.
 
 If your issue is not listed here:
 
-- **Discord:** https://discord.gg/g5sNBZHZBd — post in the `#runtime-atlas` channel
+- [Discord](https://discord.gg/g5sNBZHZBd) — post in the `#runtime-atlas` channel
 - For purchase or licensing issues, contact support through the platform you purchased from:
   - Unity Asset Store: via the Asset Store review/support system
   - itch.io: via the itch.io purchase page

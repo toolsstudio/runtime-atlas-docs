@@ -9,11 +9,9 @@
 Runtime Atlas is a paid product. Purchase it from one of the following platforms
 before following the import steps below.
 
-| Platform | URL |
-|----------|-----|
-| Unity Asset Store | https://assetstore.unity.com/packages/slug/367424 |
-| itch.io | https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit |
-| Gumroad | https://toolsstudio.gumroad.com/l/runtime-atlas |
+- [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424)
+- [itch.io](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit)
+- [Gumroad](https://toolsstudio.gumroad.com/l/runtime-atlas)
 
 Source code is not included and is not publicly available.
 
@@ -112,5 +110,5 @@ written outside this folder. EditorPrefs written by Runtime Atlas use the
 
 If import fails or you encounter licensing issues, reach out via:
 
-- **Discord:** https://discord.gg/g5sNBZHZBd
+- [Discord](https://discord.gg/g5sNBZHZBd)
 - The support channel on the platform you purchased from

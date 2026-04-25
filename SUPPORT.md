@@ -13,7 +13,7 @@ common installation, configuration, and runtime issues with step-by-step fixes.
 
 ## Community Support
 
-**Discord:** https://discord.gg/g5sNBZHZBd
+[Discord](https://discord.gg/g5sNBZHZBd)
 
 The Discord server is the primary support channel. Post in the `#runtime-atlas`
 channel with the following information:
@@ -43,9 +43,9 @@ channel of the platform you purchased from:
 
 Runtime Atlas is a paid product. If you have not yet purchased it:
 
-- Unity Asset Store: https://assetstore.unity.com/packages/slug/367424
-- itch.io: https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit
-- Gumroad: https://toolsstudio.gumroad.com/l/runtime-atlas
+- [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424)
+- [itch.io](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit)
+- [Gumroad](https://toolsstudio.gumroad.com/l/runtime-atlas)
 
 ---
 
@@ -56,5 +56,4 @@ from Tools Studio for Unity GUID integrity — it detects GUID collisions, orpha
 `.meta` files, broken asset references, and related issues across the project,
 with simulation-gated fixes and a 48-hour rollback guarantee. It is not related
 to Runtime Atlas support. For MetaGuard issues, use the MetaGuard issue tracker
-at https://github.com/Afterix-Hub/MetaGuard or its documentation at
-https://github.com/toolsstudio/metaguard-docs.
+at [MetaGuard](https://github.com/Afterix-Hub/MetaGuard) or its [documentation](https://github.com/toolsstudio/metaguard-docs).
