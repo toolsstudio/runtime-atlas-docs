@@ -2,6 +2,10 @@
 
 **Runtime Atlas v1.1.0**
 
+> This guide is for licensed customers upgrading from v1.0.0.
+> If you have not yet purchased Runtime Atlas, see
+> [Installation](installation.md) for purchase and import instructions.
+
 ---
 
 ## Breaking Changes

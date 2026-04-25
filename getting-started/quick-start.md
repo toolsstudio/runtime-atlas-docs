@@ -2,6 +2,12 @@
 
 **Runtime Atlas v1.1.0**
 
+> Runtime Atlas is a paid product. Purchase it at the
+> [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424),
+> [itch.io](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit),
+> or [Gumroad](https://toolsstudio.gumroad.com/l/runtime-atlas)
+> before following these steps.
+
 ---
 
 ## Step 1 — Open the Window

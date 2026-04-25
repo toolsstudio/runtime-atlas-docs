@@ -1,6 +1,12 @@
 # Runtime Atlas — Changelog
 
-**Publisher:** Tools Studio
+**Publisher:** Tools Studio | **Product:** Paid — [purchase here](https://assetstore.unity.com/packages/slug/367424)
+
+This changelog covers the Runtime Atlas package. For documentation-only changes,
+see commit history in this repository.
+
+---
+
 
 ---
 

@@ -151,3 +151,15 @@ Or configure a mixer manually. See [Audio Mixer Setup](guides/audio-mixer-setup.
 - If using the **legacy Input Manager**: confirm `Project Settings > Player > Active Input Handling` is set to `Input Manager (Old)` or `Both`.
 - If using the **new Input System**: confirm the `com.unity.inputsystem` package is installed.
 - Confirm the Game view has focus when pressing keys. Unity does not receive key input when another window is focused.
+
+---
+
+## Getting Further Help
+
+If your issue is not listed here:
+
+- **Discord:** https://discord.gg/g5sNBZHZBd — post in the `#runtime-atlas` channel
+- For purchase or licensing issues, contact support through the platform you purchased from:
+  - Unity Asset Store: via the Asset Store review/support system
+  - itch.io: via the itch.io purchase page
+  - Gumroad: via the Gumroad purchase receipt

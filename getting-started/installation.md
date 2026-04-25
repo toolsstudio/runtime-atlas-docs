@@ -4,6 +4,21 @@
 
 ---
 
+## Obtaining the Package
+
+Runtime Atlas is a paid product. Purchase it from one of the following platforms
+before following the import steps below.
+
+| Platform | URL |
+|----------|-----|
+| Unity Asset Store | https://assetstore.unity.com/packages/slug/367424 |
+| itch.io | https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit |
+| Gumroad | https://toolsstudio.gumroad.com/l/runtime-atlas |
+
+Source code is not included and is not publicly available.
+
+---
+
 ## Requirements
 
 | Requirement | Minimum |
@@ -14,13 +29,14 @@
 | Input backend | Any (Input System and legacy Input Manager both supported) |
 | Platform | Windows, macOS, Linux (Editor only) |
 
-Runtime Atlas is an Editor-only toolkit. It has no runtime player dependencies and adds no overhead to player builds.
+Runtime Atlas is an Editor-only toolkit. It has no runtime player dependencies
+and adds no overhead to player builds.
 
 ---
 
 ## Import
 
-### From Unity Asset Store
+### From the Unity Asset Store
 
 1. Open the **Package Manager** (`Window > Package Manager`).
 2. Select **My Assets**.
@@ -28,10 +44,15 @@ Runtime Atlas is an Editor-only toolkit. It has no runtime player dependencies a
 4. In the import dialog, import all files.
 5. Let Unity complete script compilation.
 
-### Manual Import
+### From itch.io or Gumroad
 
-1. Copy the `Assets/RuntimeAtlas` folder into your project's `Assets` directory.
-2. Let Unity complete script compilation.
+Purchases on itch.io and Gumroad deliver a `.unitypackage` file.
+
+1. Download the `.unitypackage` from your purchase page.
+2. In Unity, open `Assets > Import Package > Custom Package`.
+3. Select the downloaded `.unitypackage` file.
+4. In the import dialog, import all files.
+5. Let Unity complete script compilation.
 
 ---
 
@@ -52,7 +73,8 @@ Assets/RuntimeAtlas/Editor/Demo/RuntimeAtlas.Editor.Demo.asmdef
 
 ### No Compile Errors
 
-The Unity Console must show no compile errors. If errors appear, see [Troubleshooting](../troubleshooting.md).
+The Unity Console must show no compile errors. If errors appear,
+see [Troubleshooting](../troubleshooting.md).
 
 ### Window Opens
 
@@ -64,18 +86,31 @@ The Unity Console must show no compile errors. If errors appear, see [Troublesho
 
 ## First Run
 
-On first import, Runtime Atlas displays a one-time upgrade dialog. This dialog confirms the package is active. Click **OK** to dismiss it. It will not appear again.
-
-To re-open it manually, delete the `RuntimeAtlas.Upgrade.1.0.0.EditorUX` key from **Edit > Preferences > (any)** — though there is no reason to do so under normal circumstances.
+On first import, Runtime Atlas displays a one-time upgrade dialog confirming the
+package is active. Click **OK** to dismiss. It will not appear again.
 
 ---
 
 ## Input System
 
-Runtime Atlas core systems do not use Unity's input APIs. The demo scene includes an input compatibility layer (`RADemoInputCompat`) that supports both legacy Input Manager and the new Input System without requiring either to be present. No configuration is needed.
+Runtime Atlas core systems do not use Unity's input APIs. The demo scene includes
+an input compatibility layer (`RADemoInputCompat`) that supports both legacy
+Input Manager and the new Input System without requiring either to be present.
+No configuration is needed.
 
 ---
 
 ## Uninstall
 
-Delete the `Assets/RuntimeAtlas` folder from your project. No other files are written outside this folder. EditorPrefs written by Runtime Atlas use the `RuntimeAtlas.*` key prefix and are harmless to leave.
+Delete the `Assets/RuntimeAtlas` folder from your project. No other files are
+written outside this folder. EditorPrefs written by Runtime Atlas use the
+`RuntimeAtlas.*` key prefix and are harmless to leave.
+
+---
+
+## Support
+
+If import fails or you encounter licensing issues, reach out via:
+
+- **Discord:** https://discord.gg/g5sNBZHZBd
+- The support channel on the platform you purchased from
