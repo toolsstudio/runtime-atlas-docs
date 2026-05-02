@@ -1,106 +1,60 @@
 # Audio Mixer Setup
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Overview
 
-Runtime Atlas includes a one-click utility that creates and configures an `AudioMixer` asset with five standard bus groups and exposes their volume parameters. Once configured, the Runtime Atlas Mixer tab can read and display those parameters during Play Mode.
+The Mixer tab requires an `AudioMixer` asset with at least one exposed parameter. This guide walks through exposing parameters and connecting the mixer to Runtime Atlas.
 
 ---
 
-## Auto-Config Utility
+## Step 1 — Create or Locate Your Audio Mixer
 
-Run via:
+If you do not already have an Audio Mixer:
 
-```
-Window > Runtime Atlas > Auto-Config Audio Mixer
-```
-
-### What It Creates
-
-The utility creates the following if they do not already exist:
-
-**Asset path:** `Assets/RuntimeAtlas/Demo/Audio/RADemoMixer.mixer`
-
-**Groups:**
-
-| Group name | Parent | Purpose |
-|-----------|--------|---------|
-| Master | (root) | Master output |
-| Music | Master | Background music |
-| SFX | Master | Sound effects |
-| Ambient | Master | Ambient / environmental audio |
-| UI | Master | UI feedback sounds |
-
-**Exposed parameters:**
-
-| Parameter name | Target group | Property |
-|---------------|-------------|----------|
-| `MasterVolume` | Master | Volume |
-| `MusicVolume` | Music | Volume |
-| `SFXVolume` | SFX | Volume |
-| `AmbientVolume` | Ambient | Volume |
-| `UIVolume` | UI | Volume |
-
-All parameters are exposed at their default value of `0 dB`.
+1. In the Project window: `Assets > Create > Audio Mixer`.
+2. Name it (e.g., `MainMixer`).
+3. Open it: `Window > Audio > Audio Mixer`.
 
 ---
 
-## Manual Setup
+## Step 2 — Expose Parameters
 
-If the auto-config utility does not meet your project requirements, configure a custom mixer manually:
+In the Audio Mixer window:
 
-1. Create an `AudioMixer` asset via `Assets > Create > Audio Mixer`.
-2. In the AudioMixer window, create the bus groups required by your project.
-3. Right-click the Volume property of each group you want to monitor and select **Expose '[GroupName] Volume' to script**.
-4. Rename the exposed parameter in the **Exposed Parameters** panel to a consistent naming scheme.
-5. Assign `AudioSource` components to their respective mixer groups via the **Output** field.
+1. Select a group (e.g., `Master`).
+2. In the Inspector, right-click the **Volume** property.
+3. Select **Expose '...' to script**.
+4. In the **Exposed Parameters** panel (top-right of the mixer window), rename the parameter to a descriptive label (e.g., `MasterVolume`).
 
-Runtime Atlas displays all exposed parameters regardless of name. No specific naming convention is required for the Mixer tab to function.
-
----
-
-## Assigning Sources to Groups
-
-After creating the mixer:
-
-1. Select each `AudioSource` in the scene.
-2. Set its **Output** field to the target mixer group (e.g., `RADemoMixer/Music`).
-3. Enter Play Mode. The Mixer tab will show live parameter values.
+Repeat for any parameters you want visible in the Runtime Atlas Mixer tab.
 
 ---
 
-## Accessing Mixer Parameters at Runtime
+## Step 3 — Connect to Runtime Atlas
 
-To adjust mixer parameters from game code:
+### Option A — Auto-Configure
 
-```csharp
-using UnityEngine;
-using UnityEngine.Audio;
+In the Runtime Atlas Mixer tab, click **Auto-Configure**. Runtime Atlas scans the project for `AudioMixer` assets and selects the first one it finds. If your project has multiple mixers, use Option B for precision.
 
-public class VolumeController : MonoBehaviour
-{
-    [SerializeField] private AudioMixer m_Mixer;
+### Option B — Manual Assignment
 
-    // Value is in decibels. Range: typically -80 to 0.
-    public void SetMusicVolume(float linearVolume)
-    {
-        // Convert linear (0–1) to decibels
-        float dB = linearVolume > 0.0001f
-            ? 20f * Mathf.Log10(linearVolume)
-            : -80f;
+1. Open **Edit > Project Settings > Runtime Atlas**.
+2. In the **Mixer** section, drag your `AudioMixer` asset into the **Audio Mixer** field.
 
-        m_Mixer.SetFloat("MusicVolume", dB);
-    }
-}
-```
+---
+
+## Step 4 — Verify
+
+1. Enter Play Mode.
+2. Open the **Mixer** tab.
+3. Confirm exposed parameters appear in the list with editable values.
 
 ---
 
 ## Notes
 
-- The auto-config utility does not modify any existing `AudioMixer` assets. It only creates a new asset at the specified path.
-- If `Assets/RuntimeAtlas/Demo/Audio/RADemoMixer.mixer` already exists, the utility does nothing and logs a message to the Unity Console.
-- The created mixer is a standard Unity `AudioMixer` asset. It has no dependency on Runtime Atlas at runtime.
+- Only exposed parameters are shown. Non-exposed parameters (Volume, Pitch, etc.) that have not been explicitly exposed via the right-click menu are not visible in the Mixer tab.
+- Parameter value ranges are defined by the parameter type in the mixer. Volume parameters are typically in the range [-80, 0] dB.
+- Changes made in the Mixer tab call `audioMixer.SetFloat(paramName, value)` immediately and affect the live mixer in Play Mode.

@@ -1,116 +1,112 @@
 # Demo Behaviours API
-
-**Namespace:** `RuntimeAtlas`  
-**Assembly:** `RuntimeAtlas.Core.Demo`  
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
-## Overview
+## Assembly
 
-The demo scene includes five MonoBehaviour components and one static utility class. All are contained in the `RuntimeAtlas.Core.Demo` assembly and ship as part of the package. They are used exclusively by the demo scene and serve as load-generation tools for testing Runtime Atlas diagnostics.
+`RuntimeAtlas.Core.Demo` | Namespace: `RuntimeAtlas`
 
-These types are not intended as production game components.
-
----
-
-## `RADemoKinematicMover`
-
-Moves a kinematic `Rigidbody` platform up and down using `Rigidbody.MovePosition` on `FixedUpdate`.
-
-### Inspector Fields
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Amplitude` | `float` | `2.5` | Peak displacement in metres |
-| `Frequency` | `float` | `0.4` | Oscillation cycles per second |
-
-### Requirements
-
-Requires a `Rigidbody` component on the same GameObject with `isKinematic = true`.
+These MonoBehaviours are included for the demo scene only. They are not intended for use in production projects. They ship in player builds only when the demo assembly is included in a build (it is excluded by default).
 
 ---
 
-## `RADemoSpinner`
-
-Rotates the Transform around a configurable axis each `Update`.
-
-### Inspector Fields
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `DegreesPerSecond` | `float` | `45` | Rotation speed |
-| `Axis` | `Vector3` | `Vector3.up` | Rotation axis in local space |
-
----
-
-## `RADemoBouncer`
-
-Applies a sine-wave vertical offset to the Transform's Y position each `Update`.
-
-### Inspector Fields
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Height` | `float` | `2.5` | Peak bounce height in metres |
-| `Speed` | `float` | `1.8` | Bounce frequency multiplier |
-
----
-
-## `RADemoStressTester`
-
-Applies configurable GC pressure and optional physics spawning during Play Mode. Used to generate load for profiler and alert testing.
-
-### Inspector Fields
-
-| Section | Field | Type | Default | Description |
-|---------|-------|------|---------|-------------|
-| GC Pressure | `gcAllocBytesPerFrame` | `int` | `0` | Bytes allocated per frame while stress mode is active. `0` disables GC stress. |
-| Physics Spawner | `spawnPhysicsObjects` | `bool` | `false` | Spawn additional rigidbodies during stress mode |
-| Physics Spawner | `maxSpawnedObjects` | `int` | `20` | Maximum concurrently spawned objects |
-| Physics Spawner | `spawnInterval` | `float` | `1.5` | Seconds between spawns |
-| Stress Control | `startInStressMode` | `bool` | `false` | Begin in stress mode when Play Mode starts |
-| Stress Control | `allowRuntimeToggle` | `bool` | `true` | Allow toggling stress mode with a key at runtime |
-| Stress Control | `stressToggleKey` | `KeyCode` | `KeyCode.T` | Key used to toggle stress mode |
-
-### Runtime Property
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `IsHighStressMode` | `bool` | Read-only. Current stress mode state. |
-
----
-
-## `RADemoController`
-
-Master orchestrator for the demo scene. Renders an on-screen HUD during Play Mode showing active system status and keyboard shortcuts. Reads from `RADemoStressTester` for stress mode display.
-
-### Inspector Fields
-
-None. The controller auto-discovers the `RADemoStressTester` in the scene.
-
-### Runtime Keyboard Controls
-
-| Key | Action |
-|-----|--------|
-| `H` | Toggle HUD visibility |
-
----
-
-## `RADemoInputCompat`
+## RADemoController
 
 ```csharp
-public static class RADemoInputCompat
+public sealed class RADemoController : MonoBehaviour
 ```
 
-Static input compatibility helper. Supports both legacy `Input Manager` and the Unity `Input System` without requiring either as a hard dependency.
+Coordinates all demo behaviours from a single component. Provides a Unity Inspector toggle panel to enable/disable individual demo systems at runtime.
 
-### Method
+**Serialized fields:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enableStressTester` | `bool` | `true` | Enables/disables `RADemoStressTester` |
+| `enableSpinner` | `bool` | `true` | Enables/disables `RADemoSpinner` |
+| `enableBouncer` | `bool` | `true` | Enables/disables `RADemoBouncer` |
+| `enableMover` | `bool` | `true` | Enables/disables `RADemoKinematicMover` |
+
+---
+
+## RADemoKinematicMover
 
 ```csharp
-// Returns true if the specified key was pressed this frame.
-// Checks the Input System first (via reflection), then falls back to legacy Input.
-public static bool GetKeyDown(KeyCode keyCode)
+public sealed class RADemoKinematicMover : MonoBehaviour
 ```
 
-This class uses runtime reflection to detect the Input System. There is no compile-time dependency on `com.unity.inputsystem`.
+Moves a `Rigidbody` kinematically along a configurable path.
+
+**Serialized fields:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `speed` | `float` | `2.0f` | Movement speed (units/s) |
+| `range` | `float` | `5.0f` | Movement range in each axis |
+| `axis` | `Vector3` | `Vector3.right` | Movement axis |
+
+---
+
+## RADemoSpinner
+
+```csharp
+public sealed class RADemoSpinner : MonoBehaviour
+```
+
+Rotates the GameObject at a fixed angular velocity.
+
+**Serialized fields:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `degreesPerSecond` | `float` | `90.0f` | Rotation speed |
+| `axis` | `Vector3` | `Vector3.up` | Rotation axis (local space) |
+
+---
+
+## RADemoBouncer
+
+```csharp
+public sealed class RADemoBouncer : MonoBehaviour
+```
+
+Applies a periodic upward force to a `Rigidbody`, producing a bouncing motion.
+
+**Serialized fields:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `forceMagnitude` | `float` | `5.0f` | Applied force magnitude |
+| `interval` | `float` | `1.5f` | Seconds between force applications |
+
+---
+
+## RADemoStressTester
+
+```csharp
+public sealed class RADemoStressTester : MonoBehaviour
+```
+
+Instantiates prefabs on a timer to increase scene complexity and produce measurable performance data in the Profiler tab.
+
+**Serialized fields:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `spawnPrefab` | `GameObject` | — | Prefab to instantiate |
+| `spawnInterval` | `float` | `0.5f` | Seconds between spawns |
+| `maxSpawnCount` | `int` | `50` | Maximum simultaneous spawned objects |
+| `destroyOldest` | `bool` | `true` | Destroy oldest spawned object when limit reached |
+
+---
+
+## RADemoInputCompat
+
+```csharp
+public sealed class RADemoInputCompat : MonoBehaviour
+```
+
+Input compatibility layer. Conditionally uses the new Input System or legacy Input Manager depending on which packages are present in the project.
+
+This component is required by the demo scene. It has no public API surface for external use.

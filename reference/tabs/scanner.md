@@ -1,63 +1,66 @@
 # Scanner Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Scans all C# script files in `Assets/` for common code quality issues. The scan is triggered manually — it never runs automatically or on every frame.
+Performs static analysis on C# source files in the configured search path. Detects common performance and code quality issues without requiring compilation or Play Mode.
 
 ---
 
 ## Running a Scan
 
-1. Open the **Scanner** tab.
+1. Set the search path (defaults to `Assets/`).
 2. Click **Scan Scripts**.
-3. Wait for completion. Scan time scales with project size.
-4. Review results in the list.
+3. Wait for the scan to complete. Progress is shown in the button label.
+4. Review results in the result list.
 
-The tab shows the last scan time and the number of files scanned.
-
----
-
-## Detected Issues
-
-| Category | Issue | Severity |
-|----------|-------|----------|
-| Hot path | `FindObjectOfType<T>()` called inside a method body (not `Awake`/`Start`) | Warning |
-| Empty lifecycle | `Update()` with no body | Info |
-| Empty lifecycle | `FixedUpdate()` with no body | Info |
-| Empty lifecycle | `LateUpdate()` with no body | Info |
-| Null safety | Method returning a reference type with no null check on result | Info |
-
-Patterns are matched using regular expressions against raw source text. The scanner does not compile or execute code.
+The scan is synchronous. On large projects (thousands of files) it may cause a brief editor pause. This is a known limitation.
 
 ---
 
-## Result Fields
+## Detected Pattern Categories
 
-Each result shows:
+| Category | Examples |
+|----------|---------|
+| Hot-path allocation | `new` inside `Update` / `FixedUpdate` / `LateUpdate` |
+| Uncached `GetComponent` | `GetComponent<T>()` result not stored in a variable |
+| `FindObjectsOfType` | Any call to find-all-objects methods |
+| `Camera.main` in hot path | `Camera.main` accessed inside `Update` |
+| `SendMessage` usage | `SendMessage` / `BroadcastMessage` calls |
+| `Debug.Log` in hot path | Log calls inside `Update`-family methods |
+| `Resources.Load` | Any `Resources.Load` call |
+| `print()` usage | `print()` calls (slower than `Debug.Log`) |
+| Unscaled transform access in loop | `transform.position` inside `for`/`foreach` without caching |
+
+---
+
+## Result Row Fields
 
 | Field | Description |
 |-------|-------------|
-| **File** | Asset-relative path to the script |
-| **Line** | Line number of the issue |
-| **Issue** | Human-readable description |
-| **Category** | Issue category (Hot path, Empty lifecycle, Null safety) |
-| **Severity** | Info, Warning, or Critical |
-| **Open** button | Opens the file at the flagged line in the Scripts viewer |
+| File | Source file path (relative to `Assets/`) |
+| Line | Line number |
+| Issue | Human-readable description |
+| Category | Issue category |
+| Severity | Info / Warning / Critical |
+
+Clicking the file path opens the file in the Scripts tab at the relevant line.
 
 ---
 
-## Limitations
+## Controls
 
-- The scanner operates on source text, not compiled assemblies. It cannot detect issues that require semantic analysis.
-- Files in `Editor/` folders are included in the scan.
-- Generated files (e.g., code generation output) may produce false positives if they match issue patterns.
+| Control | Action |
+|---------|--------|
+| **Scan Scripts** | Run the scan |
+| **Clear** | Clear all results |
+| Search field | Filter results by file name or issue text |
+| Severity filter | Show/hide results by severity level |
 
 ---
 
-## Relationship to Optimizer
+## Relationship to Optimizer Tab
 
-Scanner results feed directly into the **Optimizer** tab. The Optimizer produces actionable fix suggestions from scanner output. See [Optimizer Tab](optimizer.md).
+The Optimizer tab reads the Scanner results and presents human-readable fix suggestions grouped by category. The Scanner must be run before the Optimizer shows data.

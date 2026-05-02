@@ -1,42 +1,47 @@
 # Animator Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Monitors `Animator` components on GameObjects in the scene. Displays active state, current animation state machine layer, and parameter values during Play Mode.
+Monitors `Animator` components in the scene. In Play Mode, shows live state machine state, parameter values, and transition info. In Edit Mode, lists all Animators with their controller assignment.
 
 ---
 
-## Tracked Data
+## Edit Mode
 
-For each `Animator` found in the scene:
+Lists all `Animator` components in the scene with their GameObject name and assigned `RuntimeAnimatorController`. Click the jump icon to select the GameObject.
+
+The list is refreshed at most once per second.
+
+---
+
+## Play Mode
+
+For each Animator with a valid controller:
+
+**State Info:**
 
 | Field | Description |
 |-------|-------------|
-| **Name** | GameObject name |
-| **Controller** | Assigned `RuntimeAnimatorController` asset name |
-| **Layer count** | Number of state machine layers |
-| **Current state** | Name of the currently playing state on layer 0 |
-| **Normalised time** | Playback position within the current state (0–1) |
-| **Speed** | Animator speed multiplier |
-| **Enabled** | Animator component enabled state |
+| Current State | Name of the current state in the base layer |
+| Normalized Time | Playback position within the current state (0–1) |
+| Layer count | Number of animation layers |
 
-### Parameters
+**Parameters:**
 
-All `AnimatorControllerParameter` values are displayed:
+| Parameter type | Display |
+|----------------|---------|
+| Float | Editable slider |
+| Int | Editable integer field |
+| Bool | Toggle |
+| Trigger | Button (fires the trigger) |
 
-| Parameter type | Displayed as |
-|----------------|-------------|
-| `Float` | Numeric value |
-| `Int` | Numeric value |
-| `Bool` | True / False |
-| `Trigger` | Active / Inactive |
+Parameter values can be read and written live from the Animator tab without modifying scene assets.
 
 ---
 
-## Notes
+## Search Filter
 
-The Animator tab reads parameter values each editor frame. It does not write to parameters. Parameter writes during Play Mode must be performed through game code or the Unity Animator window.
+The search field at the top of the tab filters animators by GameObject name.

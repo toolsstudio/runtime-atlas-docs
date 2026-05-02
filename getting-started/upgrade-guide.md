@@ -1,91 +1,94 @@
-# Upgrade Guide — v1.0.0 to v1.1.0
+# Upgrade Guide
+**Runtime Atlas**
 
-**Runtime Atlas v1.1.0**
-
-> This guide is for licensed customers upgrading from v1.0.0.
-> If you have not yet purchased Runtime Atlas, see
-> [Installation](installation.md) for purchase and import instructions.
+> This guide is for licensed customers upgrading between versions.
+> If you have not yet installed Runtime Atlas, see [Installation](installation.md).
 
 ---
 
-## Breaking Changes
+## General Upgrade Procedure
 
-Version 1.1.0 contains one breaking change: a full namespace rename.
+For all version upgrades:
 
-### Namespace Migration
+1. Close the Runtime Atlas window in Unity.
+2. Delete `Assets/RuntimeAtlas` from your project.
+3. Import the new version (Asset Store, itch.io, or Gumroad).
+4. Confirm zero compile errors in the Console.
+5. Open `Window > Runtime Atlas > Open` and verify the About tab shows the new version.
 
-All public Runtime Atlas types have moved to new namespaces.
+Do not import a new version on top of an existing installation.
 
-| Previous namespace | New namespace |
-|-------------------|--------------|
+---
+
+## v1.1.0 → v1.2.0
+
+**Breaking changes:** None.
+
+**API changes:** None. No public types, method signatures, or interfaces changed.
+
+**What changed:** v1.2.0 is a stabilization release. All changes are internal — GUIStyle caching, texture lifecycle fixes, and FindObjectsByType throttling. No migration steps are required.
+
+**Verification after upgrade:**
+
+1. Open the Unity Console. Confirm zero compile errors.
+2. Open `Window > Runtime Atlas > Open`.
+3. Confirm the About tab shows **Version 1.2.0**.
+4. Enter Play Mode and confirm Camera, Audio, Physics, and Profiler tabs populate normally.
+
+---
+
+## v1.0.0 → v1.1.0
+
+### Breaking Change: Namespace Migration
+
+All public Runtime Atlas types moved to new namespaces.
+
+| Previous | New |
+|----------|-----|
 | `Arish.RA` | `RuntimeAtlas` |
 | `Arish.RA.Editor` | `RuntimeAtlas.Editor` |
 
-**Affected public types:**
+Affected types:
 
 | Type | Previous namespace | New namespace |
-|------|--------------------|--------------|
+|------|--------------------|----|
 | `AlertEntry` | `Arish.RA` | `RuntimeAtlas` |
 | `AlertSeverity` | `Arish.RA` | `RuntimeAtlas` |
 | All Editor classes | `Arish.RA.Editor` | `RuntimeAtlas.Editor` |
 
----
+### Migration Steps
 
-## Migration Steps
-
-### 1. Update `using` directives
-
-In any project script that references Runtime Atlas types, replace:
+**Step 1 — Update `using` directives**
 
 ```csharp
 // Before
 using Arish.RA;
 using Arish.RA.Editor;
-```
 
-```csharp
 // After
 using RuntimeAtlas;
 using RuntimeAtlas.Editor;
 ```
 
-### 2. Update fully-qualified type references
-
-If your code uses fully qualified names (without `using` directives), update accordingly:
+**Step 2 — Update fully-qualified type references (if any)**
 
 ```csharp
 // Before
 Arish.RA.AlertEntry entry = new Arish.RA.AlertEntry(...);
-Arish.RA.AlertSeverity sev = Arish.RA.AlertSeverity.Warning;
-```
 
-```csharp
 // After
 RuntimeAtlas.AlertEntry entry = new RuntimeAtlas.AlertEntry(...);
-RuntimeAtlas.AlertSeverity sev = RuntimeAtlas.AlertSeverity.Warning;
 ```
 
-### 3. Update Assembly Definition references
+**Step 3 — Assembly definition references**
 
-If any custom `.asmdef` in your project explicitly references `RuntimeAtlas.Core` or `RuntimeAtlas.Editor`, no change is needed — these assembly names have not changed, only the C# namespaces inside them.
+Assembly names (`RuntimeAtlas.Core`, `RuntimeAtlas.Editor`) have not changed. If your custom `.asmdef` files reference these assemblies by name, no change is needed.
 
-### 4. Re-import the package
+**Step 4 — Re-import**
 
-After updating directives, delete `Assets/RuntimeAtlas` and re-import the v1.1.0 package. The package bootstrap will detect the previous installation and migrate the relevant EditorPrefs key automatically.
+Delete `Assets/RuntimeAtlas` and import the v1.1.0 package. The package bootstrap detects the previous installation and migrates the relevant EditorPrefs key automatically.
 
----
-
-## Non-Breaking Changes in 1.1.0
-
-These changes require no action from existing users:
-
-- Demo scene script bindings are repaired. If you were seeing missing-script warnings on demo scene objects, they are resolved.
-- The Add Component button in the Inspector tab no longer logs a console error in Unity 6.
-- The `RuntimeAtlas.Editor` assembly no longer references `RuntimeAtlas.Core.Demo`. If you had a custom assembly referencing `RuntimeAtlas.Editor`, this change has no effect on your project.
-
----
-
-## Verification After Upgrade
+### Verification
 
 1. Open the Unity Console. Confirm zero compile errors.
 2. Open `Window > Runtime Atlas > Open`.

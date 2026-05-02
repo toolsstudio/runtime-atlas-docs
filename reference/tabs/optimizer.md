@@ -1,48 +1,49 @@
 # Optimizer Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Converts Script Scanner results into structured, actionable suggestions. Each suggestion explains what the issue is, why it matters, and how to resolve it.
+Presents human-readable fix suggestions derived from Script Scanner results. Groups related issues and provides concrete recommended actions.
 
 ---
 
-## Workflow
+## Prerequisite
 
-The Optimizer tab requires a completed Scanner scan. If no scan has been run, the tab displays a prompt to run the scanner first.
-
-After a scan:
-
-1. Open the **Optimizer** tab.
-2. Suggestions are displayed automatically — no additional action needed.
-3. Each suggestion card shows the issue, severity, affected file and line, and resolution steps.
-4. Click **Open** to navigate to the flagged line in the Scripts viewer.
+The Script Scanner must have been run at least once before this tab shows data. If no scan results are present, the tab shows a prompt to run the Scanner first.
 
 ---
 
-## Suggestion Card Fields
+## Suggestion Format
+
+Each suggestion contains:
 
 | Field | Description |
 |-------|-------------|
-| **Title** | Short name of the issue pattern |
-| **Severity** | Info, Warning, or Critical |
-| **Detail** | Explanation of why the pattern is a problem |
-| **How to Fix** | Concrete resolution steps |
-| **File** | Script file path |
-| **Line** | Line number |
-| **Open** | Opens the Scripts viewer at that line |
+| Category | Issue category (e.g., "Hot-path allocation") |
+| Issue count | Number of scanner results in this category |
+| Description | What the pattern is and why it is a problem |
+| Fix recommendation | Concrete code-level action |
+| Example | Before/after code snippet |
 
 ---
 
-## Suggestion Count
+## Categories
 
-The tab header shows the total suggestion count after a scan. A count of zero means no actionable items were found from the current scan results.
+| Category | Suggested Fix |
+|----------|--------------|
+| Hot-path allocation | Move `new` expressions outside the `Update` loop; use object pooling or pre-allocated arrays |
+| Uncached `GetComponent` | Cache the result in `Awake` or `Start`; use a private field |
+| `FindObjectsOfType` | Cache the result; refresh only when scene changes |
+| `Camera.main` | Cache `Camera.main` in `Start`; `Camera.main` calls `FindObjectsOfType` internally |
+| `SendMessage` | Replace with direct method calls or UnityEvents |
+| `Debug.Log` in hot path | Remove or wrap in `#if UNITY_EDITOR` / conditional compilation |
+| `Resources.Load` | Preload assets in `Awake`; avoid loading in hot paths |
+| `print()` | Replace with `Debug.Log()` |
 
 ---
 
-## Relationship to Scanner
+## Limitations
 
-Suggestions are derived exclusively from the most recent Scanner scan. Re-running the Scanner refreshes the Optimizer automatically.
+The Optimizer shows suggestions only for patterns the Scanner detected. It does not guarantee all performance issues in a project are covered. It does not execute any code changes — all actions are manual.

@@ -1,42 +1,43 @@
 # Report Export
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Overview
 
-The Report tab generates a structured session report from live Runtime Atlas data and exports it to disk. Four formats are available. All formats capture the same underlying data set — the format choice affects layout and downstream usage, not content.
+The Report tab generates a session report from Runtime Atlas data and exports it to a file. This guide documents the export workflow and the fields included in each format.
 
 ---
 
-## Generating and Exporting
+## Export Workflow
 
-1. Open **Window > Runtime Atlas > Open** (`Ctrl+Alt+R`).
-2. Select the **Report** tab.
-3. Click **Generate Preview**. This assembles the `ReportData` object from the current session state.
-4. Select an export format.
+1. Open the **Report** tab.
+2. Click **Generate Preview**. The report is assembled from current session state.
+3. Review the preview in the text area.
+4. Select a format (JSON, HTML, Markdown, CSV, DOCX, XML, or YAML).
 5. Click **Export**.
-6. Choose a destination directory. The file is written synchronously. A confirmation message shows the output path.
+6. Choose a destination folder. The file is written and the path is logged.
 
-Export can be triggered at any time. Data reflects the state at the moment **Generate Preview** is clicked, not at export time. Click **Generate Preview** again before exporting if you want a fresh snapshot.
+Generate Preview must be clicked before Export. Clicking Export on empty state produces an empty file.
 
 ---
 
-## File Naming
+## Report Data Fields
 
-All export files follow this naming convention:
-
-```
-RuntimeAtlas_Report_YYYY-MM-DD_HH-mm-ss.[ext]
-```
-
-For CSV exports, two files are written:
-
-```
-RuntimeAtlas_Report_YYYY-MM-DD_HH-mm-ss.csv          ← session summary
-RuntimeAtlas_Report_YYYY-MM-DD_HH-mm-ss_Frames.csv   ← per-frame data
-```
+| Field | Source |
+|-------|--------|
+| `projectName` | `Application.productName` |
+| `companyName` | `Application.companyName` |
+| `unityVersion` | `Application.unityVersion` |
+| `platform` | `Application.platform.ToString()` |
+| `runtimeAtlasVersion` | `k_Version` constant in `AtlasWindow` |
+| `generatedAt` | System time at Generate Preview click |
+| `sessionDuration` | Time from Play Mode entry to report generation |
+| `cameras[]` | Camera snapshot list from `CameraInspectorNode` |
+| `audioSources[]` | Audio snapshot list from `AudioInspectorNode` |
+| `alerts[]` | Alert log from `AlertSystem` at generation time |
+| `scannerResults[]` | Script scanner results from `ScriptScanner` |
+| `perfSamples[]` | Performance samples from `PerformanceProfiler` |
 
 ---
 
@@ -44,134 +45,42 @@ RuntimeAtlas_Report_YYYY-MM-DD_HH-mm-ss_Frames.csv   ← per-frame data
 
 ### JSON
 
-**Extension:** `.json`  
-**Use case:** Programmatic processing, CI pipelines, custom tooling, data archiving.
+Structured JSON object matching the `ReportData` class. All fields present as documented above.
 
-The JSON output is a single object matching the `ReportData` structure. All fields are included. Arrays are fully populated.
-
-```json
-{
-  "ProjectName": "MyGame",
-  "UnityVersion": "6000.3.10f1",
-  "Platform": "WindowsEditor",
-  "Date": "2025-04-24T19:53:14",
-  "SessionDuration": 120.4,
-  "TotalFrames": 7200,
-  "AvgFPS": 60.1,
-  "MinFPS": 28.3,
-  "MaxFPS": 168.0,
-  "AvgMemoryMB": 64.2,
-  "PeakMemoryMB": 91.7,
-  "TotalAlerts": 6,
-  "CriticalAlerts": 0,
-  "WarningAlerts": 4,
-  "InfoAlerts": 2,
-  "ScannerIssues": 12,
-  "Alerts": [
-    {
-      "Severity": "Warning",
-      "Message": "Far/Near clip ratio 3333:1 — depth precision may degrade",
-      "Source": "Camera",
-      "Time": "19:53:22"
-    }
-  ],
-  "ScanResults": [
-    {
-      "File": "Assets/Scripts/EnemyAI.cs",
-      "Line": 47,
-      "Issue": "FindObjectOfType<T> called outside Awake/Start",
-      "Category": "Hot path",
-      "Severity": "Warning"
-    }
-  ],
-  "Frames": [
-    { "Time": 0.0, "FPS": 60.2, "MemoryMB": 63.1 },
-    { "Time": 0.016, "FPS": 61.0, "MemoryMB": 63.1 }
-  ]
-}
-```
-
----
+Best for: machine processing, importing into dashboards or custom tooling.
 
 ### HTML
 
-**Extension:** `.html`  
-**Use case:** Sharing with team members, attaching to bug reports, browser-readable summaries.
+Self-contained HTML file. Includes embedded CSS for readable formatting in any browser. Sections: project metadata, performance summary, camera list, audio list, alerts table, scanner results table.
 
-A self-contained HTML file with embedded CSS. No external dependencies. Opens in any modern browser.
-
-**Sections:**
-
-1. Header — project name, version, platform, date
-2. Performance Summary — FPS range, average, session duration, memory range
-3. Alert Summary — counts by severity, full alert list as a styled table
-4. Scanner Summary — issue count, full result list as a styled table
-5. Footer — Runtime Atlas version
-
----
+Best for: sharing with non-technical stakeholders or archiving as a readable artifact.
 
 ### Markdown
 
-**Extension:** `.md`  
-**Use case:** Pasting into GitHub issues, Confluence pages, internal documentation, plain-text review.
+GitHub-compatible Markdown. Uses standard ATX headers and fenced code blocks. Fields formatted as tables where applicable.
 
-The output is standard CommonMark. No HTML is embedded. All tables use GFM pipe syntax.
-
-**Structure:**
-
-```markdown
-# Runtime Atlas Report — MyGame
-**Date:** 2025-04-24  |  **Unity:** 6000.3.10f1  |  **Platform:** WindowsEditor
-
-## Performance
-| Metric | Value |
-|--------|-------|
-| Avg FPS | 60.1 |
-...
-
-## Alerts (6)
-| Severity | Message | Source | Time |
-|----------|---------|--------|------|
-...
-
-## Scanner Results (12)
-| File | Line | Issue | Category | Severity |
-|------|------|-------|----------|----------|
-...
-```
-
----
+Best for: embedding in project wikis, README files, or issue trackers.
 
 ### CSV
 
-**Extension:** `.csv` (two files)  
-**Use case:** Spreadsheet import (Excel, Google Sheets, Numbers), data analysis, custom charting.
+Comma-separated values. Each row is one record. Multiple sections (camera, audio, alerts, scanner) are separated by blank rows with a section header comment.
 
-**Summary file columns:**
+Best for: importing into spreadsheets or data analysis tools.
 
-```
-ProjectName, UnityVersion, Platform, Date, SessionDuration, TotalFrames,
-AvgFPS, MinFPS, MaxFPS, AvgMemoryMB, PeakMemoryMB,
-TotalAlerts, CriticalAlerts, WarningAlerts, InfoAlerts, ScannerIssues
-```
+### DOCX
 
-One data row. Headers on the first row.
+Word-compatible `.docx` file. Uses `System.IO.Compression` to construct the Open XML format. Includes headers, tables, and body text. Does not require Microsoft Word to be installed.
 
-**Frames file columns:**
+Best for: formal deliverables or reports that need to be edited in Word.
 
-```
-Time, FPS, MemoryMB
-```
+### XML
 
-One row per recorded frame. Headers on the first row. This file can contain thousands of rows depending on session length and profiler capacity.
+Well-formed XML document. Root element `<RuntimeAtlasReport>` with child elements per section.
 
----
+Best for: systems that consume XML.
 
-## Report Data Freshness
+### YAML
 
-Report data captures the state at the moment **Generate Preview** is clicked:
+YAML 1.1 format. Indented structure matching the JSON schema.
 
-- Profiler frame statistics are from the current buffer at that instant.
-- Alerts include all alerts ever raised in the session, including dismissed ones.
-- Scanner results are from the most recent scan run. If no scan has been run, `ScannerIssues` is `0` and `ScanResults` is empty.
-- Timeline frame data and profiler frames are independent — the Report uses profiler frames, not timeline frames.
+Best for: config-adjacent tooling or human-readable structured data.

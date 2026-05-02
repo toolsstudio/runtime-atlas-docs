@@ -1,56 +1,49 @@
 # Mixer Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Displays the current values of exposed `AudioMixer` parameters during Play Mode. Works with any `AudioMixer` configured through the Runtime Atlas auto-config utility or manually.
+Displays Audio Mixer exposed parameters and group volume levels. Provides a setup guide for connecting an Audio Mixer to the tab.
 
 ---
 
-## Requirements
+## Setup
 
-The Mixer tab requires an `AudioMixer` asset with exposed parameters. To configure one automatically, use:
+The Mixer tab requires an `AudioMixer` asset with at least one exposed parameter.
 
-```
-Window > Runtime Atlas > Auto-Config Audio Mixer
-```
+To set up:
 
-See [Audio Mixer Setup](../../guides/audio-mixer-setup.md) for full setup instructions.
+1. Open the Audio Mixer in Unity (`Window > Audio > Audio Mixer`).
+2. Right-click a parameter and select **Expose Parameter**.
+3. Give the exposed parameter a name.
+4. In the Runtime Atlas Mixer tab, click **Auto-Configure** or manually assign the mixer asset.
 
----
-
-## Displayed Data
-
-For each exposed parameter on the configured mixer:
-
-| Field | Description |
-|-------|-------------|
-| **Parameter name** | The exposed parameter name as set in the AudioMixer asset |
-| **Value (dB)** | Current value in decibels |
-| **Default** | Default value for comparison |
+See [Audio Mixer Setup](../../guides/audio-mixer-setup.md) for step-by-step instructions.
 
 ---
 
-## Expected Parameters
+## Display
 
-When configured via the auto-config utility, Runtime Atlas exposes and monitors the following parameter names:
+Once configured, the Mixer tab shows:
 
-| Parameter | Default (dB) | Description |
-|-----------|-------------|-------------|
-| `MasterVolume` | 0 | Master output volume |
-| `MusicVolume` | 0 | Background music bus |
-| `SFXVolume` | 0 | Sound effects bus |
-| `AmbientVolume` | 0 | Ambient sound bus |
-| `UIVolume` | 0 | UI sound bus |
+| Column | Description |
+|--------|-------------|
+| Parameter name | Exposed parameter label |
+| Value | Current parameter value (editable) |
+| Slider | Visual slider matching the parameter range |
 
-Custom parameter names are also supported — the Mixer tab displays all exposed parameters regardless of naming convention.
+Changes made to parameter values in the Mixer tab take effect immediately on the live `AudioMixer`.
 
 ---
 
-## Notes
+## Setup Step Indicator
 
-- The Mixer tab is read-only. Adjust mixer parameters through the Unity AudioMixer window or via `AudioMixer.SetFloat()` in game code.
-- If no mixer is configured, the tab displays a prompt to run the auto-config utility.
+When no mixer is configured, the tab shows a numbered setup guide:
+
+1. Open the Audio Mixer in Unity
+2. Expose at least one parameter
+3. Assign the mixer in the Runtime Atlas settings or use Auto-Configure
+
+Each step is highlighted green when completed.

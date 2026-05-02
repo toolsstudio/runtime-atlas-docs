@@ -1,147 +1,123 @@
 # Alert System API
-
-**Namespace:** `RuntimeAtlas` (types), `RuntimeAtlas.Editor` (system)  
-**Assembly:** `RuntimeAtlas.Core` (types), `RuntimeAtlas.Editor` (system)  
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
-## Overview
+## Assemblies
 
-The alert system is split across two layers:
-
-- **Data types** (`RuntimeAtlas` namespace, ships in player build): `AlertSeverity`, `AlertEntry`
-- **System** (`RuntimeAtlas.Editor` namespace, Editor only): `AlertSystem`, `IAlertSource`
+| Type | Assembly | Namespace |
+|------|----------|-----------|
+| `AlertSeverity` | `RuntimeAtlas.Core` | `RuntimeAtlas` |
+| `AlertEntry` | `RuntimeAtlas.Core` | `RuntimeAtlas` |
+| `AlertSystem` | `RuntimeAtlas.Editor` | `RuntimeAtlas.Editor` |
+| `IAlertSource` | `RuntimeAtlas.Editor` | `RuntimeAtlas.Editor` |
 
 ---
 
-## `AlertSeverity` enum
+## AlertSeverity
 
 ```csharp
-namespace RuntimeAtlas
-
 public enum AlertSeverity
 {
-    Info     = 0,
-    Warning  = 1,
-    Critical = 2
+    Info,
+    Warning,
+    Critical
 }
 ```
 
-| Value | Meaning |
-|-------|---------|
-| `Info` | Informational. No user action required. |
-| `Warning` | Condition that may cause unexpected behaviour. |
-| `Critical` | Condition expected to cause a problem. |
+Used to classify alert entries. Maps directly to the badge colours in the Alerts tab: Info = blue, Warning = yellow, Critical = red.
 
 ---
 
-## `AlertEntry` struct
+## AlertEntry
 
 ```csharp
-namespace RuntimeAtlas
-
-public struct AlertEntry
+public sealed class AlertEntry
+{
+    public string      Message    { get; }
+    public AlertSeverity Severity { get; }
+    public string      Source     { get; }
+    public int         Count      { get; }
+    public bool        Dismissed  { get; }
+}
 ```
 
-| Member | Type | Description |
-|--------|------|-------------|
-| `Message` | `string` | Human-readable description |
-| `Severity` | `AlertSeverity` | Severity level |
-| `SourceName` | `string` | Name of the contributing system or object |
-| `Timestamp` | `double` | Editor time at last occurrence |
-| `GroupKey` | `string` | Aggregation key — entries with the same key are merged |
-| `OccurrenceCount` | `int` | Number of times this alert has been raised and aggregated |
-| `Dismissed` | `bool` | Whether the user has dismissed this entry |
+| Property | Description |
+|----------|-------------|
+| `Message` | Alert description text |
+| `Severity` | `Info`, `Warning`, or `Critical` |
+| `Source` | Label identifying which module generated the alert |
+| `Count` | Number of times this message was added since last cleared |
+| `Dismissed` | Whether the user has dismissed this entry |
 
-### Constructor
-
-```csharp
-public AlertEntry(
-    string message,
-    AlertSeverity severity,
-    string sourceName,
-    double timestamp,
-    string groupKey = null)
-```
-
-`groupKey` defaults to an empty string when `null`, disabling aggregation.
+`AlertEntry` instances are owned by `AlertSystem`. They should not be constructed directly.
 
 ---
 
-## `IAlertSource` interface
+## AlertSystem
 
 ```csharp
-namespace RuntimeAtlas.Editor
-
-public interface IAlertSource
-```
-
-Implement this interface on any class that should contribute alerts to the Runtime Atlas alert system.
-
-| Member | Description |
-|--------|-------------|
-| `string AlertSourceId { get; }` | Unique identifier for this source. Used as a default group key prefix. |
-| `void EvaluateAlerts(AlertSystem alertSystem, double timestamp)` | Called by `AlertSystem.Evaluate()` each refresh cycle. Call `alertSystem.AddAlert(...)` for each condition detected. |
-
-See [Custom Alert Source Guide](../guides/custom-alert-source.md) for a complete implementation example.
-
----
-
-## `AlertSystem` class
-
-```csharp
-namespace RuntimeAtlas.Editor
-
 public sealed class AlertSystem
 ```
 
-Manages the alert list. Handles aggregation, filtering, and dismissal.
-
-### Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `AllAlerts` | `IReadOnlyList<AlertEntry>` | All alerts including dismissed. Used for report export. |
-| `Count` | `int` | Non-dismissed alert count across all severities |
-| `CriticalCount` | `int` | Non-dismissed critical alert count |
-
-### Methods
+**Adding alerts:**
 
 ```csharp
-// Add an alert. Repeated calls with the same groupKey and within
-// minIntervalSeconds are aggregated into one entry.
-public void AddAlert(
-    string message,
-    AlertSeverity severity,
-    string sourceName,
-    double timestamp)
-
-public void AddAlert(
-    string message,
-    AlertSeverity severity,
-    string sourceName,
-    double timestamp,
-    string groupKey,
-    double minIntervalSeconds)
+public void AddAlert(string message, AlertSeverity severity, string source);
 ```
 
-| Parameter | Description |
-|-----------|-------------|
-| `message` | Alert description text |
-| `severity` | `AlertSeverity` level |
-| `sourceName` | Display name of the contributing system |
-| `timestamp` | `EditorApplication.timeSinceStartup` at the time of the event |
-| `groupKey` | Optional aggregation key. Alerts with the same key are merged. |
-| `minIntervalSeconds` | Minimum seconds between new occurrences of the same group key. |
+Adds an alert to the log. If an alert with the same `message` and `source` already exists and is not dismissed, its `Count` is incremented rather than adding a duplicate entry.
+
+**Reading alerts:**
 
 ```csharp
-// Evaluate all registered IAlertSource implementations.
-public void Evaluate(IEnumerable<IAlertSource> sources, double timestamp)
-
-// Remove all alerts.
-public void Clear()
-
-// Dismiss all current alerts.
-public void DismissAll()
+public IReadOnlyList<AlertEntry> Alerts { get; }
 ```
+
+Returns all alerts (including dismissed ones). Filter on `Dismissed` to show only active alerts.
+
+**Dismissing alerts:**
+
+```csharp
+public void Dismiss(AlertEntry entry);
+public void DismissAll();
+public void ClearDismissed();
+```
+
+| Method | Effect |
+|--------|--------|
+| `Dismiss(entry)` | Sets `entry.Dismissed = true` |
+| `DismissAll()` | Sets `Dismissed = true` on all entries |
+| `ClearDismissed()` | Permanently removes all dismissed entries |
+
+**Clearing:**
+
+```csharp
+public void Clear();
+```
+
+Removes all entries, dismissed or not.
+
+**Registering sources:**
+
+```csharp
+public void RegisterSource(IAlertSource source);
+public void UnregisterSource(IAlertSource source);
+```
+
+Registered sources have their `EvaluateAlerts` method called on each update cycle.
+
+---
+
+## IAlertSource
+
+```csharp
+public interface IAlertSource
+{
+    void EvaluateAlerts(AlertSystem alertSystem);
+}
+```
+
+Implement to contribute project-specific alerts. See [Custom Alert Source](../guides/custom-alert-source.md) for a complete implementation example.
+
+`EvaluateAlerts` is called on `EditorApplication.update`. Treat it as a hot path — avoid `FindObjectsByType` on every call without throttling.

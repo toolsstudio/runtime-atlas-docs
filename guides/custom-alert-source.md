@@ -1,142 +1,120 @@
 # Custom Alert Source
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Overview
 
-Any class can contribute alerts to the Runtime Atlas alert system by implementing `IAlertSource`. This decouples custom diagnostic logic from the built-in inspector nodes and keeps the alert system extensible without modifying package code.
+The `IAlertSource` interface allows any class to contribute alerts to the Runtime Atlas `AlertSystem`. Implementing it in your own editor code is the supported extension point for adding project-specific diagnostic alerts.
 
 ---
 
 ## Interface
 
 ```csharp
-namespace RuntimeAtlas.Editor
+// Namespace: RuntimeAtlas.Editor
+// File: Assets/RuntimeAtlas/Editor/Alerts/IAlertSource.cs
 
 public interface IAlertSource
 {
-    string AlertSourceId { get; }
-    void EvaluateAlerts(AlertSystem alertSystem, double timestamp);
+    void EvaluateAlerts(AlertSystem alertSystem);
 }
 ```
 
-| Member | Description |
-|--------|-------------|
-| `AlertSourceId` | A unique string identifier for this source. Used as a prefix for group keys to prevent collisions with other sources. |
-| `EvaluateAlerts` | Called by the alert system on each evaluation cycle. Add alerts by calling `alertSystem.AddAlert(...)`. |
+`EvaluateAlerts` is called once per update cycle. The implementation should inspect scene state and call `alertSystem.AddAlert(...)` for any conditions it detects.
 
 ---
 
-## Implementation
-
-The following example monitors a custom game system and raises alerts based on its state.
+## AlertSystem API
 
 ```csharp
-using UnityEditor;
-using RuntimeAtlas.Editor;
+public void AddAlert(string message, AlertSeverity severity, string source);
+```
 
-public sealed class NetworkDiagnosticsAlertSource : IAlertSource
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `message` | `string` | Human-readable alert description |
+| `severity` | `AlertSeverity` | `Info`, `Warning`, or `Critical` |
+| `source` | `string` | Label shown in the Alerts tab Source column |
+
+---
+
+## AlertSeverity Enum
+
+```csharp
+// Namespace: RuntimeAtlas
+// File: Assets/RuntimeAtlas/Runtime/AlertEntry.cs
+
+public enum AlertSeverity
 {
-    public string AlertSourceId => "NetworkDiagnostics";
+    Info,
+    Warning,
+    Critical
+}
+```
 
-    public void EvaluateAlerts(AlertSystem alertSystem, double timestamp)
+---
+
+## Example Implementation
+
+```csharp
+using RuntimeAtlas;
+using RuntimeAtlas.Editor;
+using UnityEditor;
+using UnityEngine;
+
+public class MyAlertSource : IAlertSource
+{
+    public void EvaluateAlerts(AlertSystem alertSystem)
     {
-        // Example: read state from your system and raise alerts as needed.
-        // Replace the condition below with real diagnostic logic.
+        // Example: flag if there are more than 10 active lights
+#if UNITY_2022_2_OR_NEWER
+        var lights = Object.FindObjectsByType<Light>(FindObjectsSortMode.None);
+#else
+        var lights = Object.FindObjectsOfType<Light>();
+#endif
+        int activeCount = 0;
+        foreach (var l in lights)
+            if (l != null && l.isActiveAndEnabled) activeCount++;
 
-        int droppedPackets = GetDroppedPacketCount();
-        if (droppedPackets > 10)
+        if (activeCount > 10)
         {
             alertSystem.AddAlert(
-                message:           $"High packet drop rate: {droppedPackets} dropped",
-                severity:          AlertSeverity.Warning,
-                sourceName:        "Network",
-                timestamp:         timestamp,
-                groupKey:          $"{AlertSourceId}.HighPacketDrop",
-                minIntervalSeconds: 3.0
-            );
-        }
-
-        bool serverUnreachable = IsServerUnreachable();
-        if (serverUnreachable)
-        {
-            alertSystem.AddAlert(
-                message:           "Server connection lost",
-                severity:          AlertSeverity.Critical,
-                sourceName:        "Network",
-                timestamp:         timestamp,
-                groupKey:          $"{AlertSourceId}.ServerUnreachable",
-                minIntervalSeconds: 5.0
+                $"{activeCount} active lights detected. Consider reducing for performance.",
+                AlertSeverity.Warning,
+                "MyAlertSource"
             );
         }
     }
-
-    private int GetDroppedPacketCount() => 0;   // replace with real implementation
-    private bool IsServerUnreachable()  => false; // replace with real implementation
 }
 ```
 
 ---
 
-## Registering the Source
+## Registration
 
-Custom sources must be registered with the `AlertSystem` instance. The cleanest approach is to hook into the Runtime Atlas window's evaluation cycle from an `[InitializeOnLoad]` class.
+`IAlertSource` implementations must be registered with `AlertSystem`. The registration point depends on how your editor code is structured.
+
+If you are adding alerts from an `EditorWindow` or editor utility class, register in `OnEnable` and deregister in `OnDisable`:
 
 ```csharp
-using UnityEditor;
-using RuntimeAtlas.Editor;
+// In your EditorWindow or editor utility
+private MyAlertSource _myAlertSource;
 
-[InitializeOnLoad]
-public static class NetworkDiagnosticsRegistrar
+private void OnEnable()
 {
-    private static readonly NetworkDiagnosticsAlertSource s_Source
-        = new NetworkDiagnosticsAlertSource();
-
-    static NetworkDiagnosticsRegistrar()
-    {
-        RASettings.OnAlertSourcesRequested += RegisterSources;
-    }
-
-    private static void RegisterSources(System.Collections.Generic.List<IAlertSource> sources)
-    {
-        sources.Add(s_Source);
-    }
+    _myAlertSource = new MyAlertSource();
+    // AlertSystem is accessed via the AtlasWindow instance —
+    // see AlertSystem API documentation for the registration method.
 }
 ```
 
-If `RASettings.OnAlertSourcesRequested` is not available in the version you are using, register directly through the `AlertSystem` reference obtained from `AtlasWindow.AlertSystem` (access the window via `EditorWindow.GetWindow<AtlasWindow>()`).
+**Note:** The specific registration API on `AlertSystem` depends on how your project references the Runtime Atlas editor assembly. See [Alert System API](../api/alert-system.md) for the full `AlertSystem` public surface.
 
 ---
 
-## Evaluation Cycle
+## Design Notes
 
-`EvaluateAlerts` is called:
-
-- Each editor update tick while Play Mode is active and the Runtime Atlas window is open.
-- Once per frame during the window's repaint cycle in Edit Mode.
-
-The method must be fast. Avoid allocations, file I/O, or reflection inside `EvaluateAlerts`. Cache any necessary references in the class constructor or in a separate `Update`-style method.
-
----
-
-## Group Keys
-
-The `groupKey` parameter controls alert aggregation. Two calls to `AddAlert` with the same `groupKey` within `minIntervalSeconds` increment the `OccurrenceCount` of the existing entry rather than adding a new one.
-
-Best practice: prefix your group keys with `AlertSourceId` to prevent collisions with built-in sources.
-
-```csharp
-groupKey: $"{AlertSourceId}.MyConditionName"
-```
-
----
-
-## Severity Guidelines
-
-| Condition type | Recommended severity |
-|----------------|---------------------|
-| Informational state worth noting | `Info` |
-| Degraded performance or unexpected configuration | `Warning` |
-| Failure that will produce incorrect behaviour | `Critical` |
+- `EvaluateAlerts` is called on `EditorApplication.update` — treat it as a hot path. Cache scene queries; do not call `FindObjectsByType` on every invocation.
+- Duplicate alert messages within the same evaluation cycle are aggregated (count incremented), not duplicated in the list.
+- Alerts persist until dismissed. Your source should not add the same alert repeatedly unless the condition has genuinely changed.

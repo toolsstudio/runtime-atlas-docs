@@ -1,79 +1,82 @@
 # Camera Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Displays live state for every `Camera` component active in the current scene. Allows non-destructive property editing during Play Mode without modifying the scene.
+Displays all `Camera` components in the current scene. In Play Mode, data is sourced from live snapshots polled at up to 60 Hz. In Edit Mode, the camera list is refreshed at most once per second.
 
 ---
 
-## Data Displayed
+## Edit Mode Behaviour
 
-Each camera is shown as an expandable card. The card header shows the camera's GameObject name and enabled state.
+In Edit Mode, the tab lists all `Camera` components found in the current scene. The list is read-only — properties cannot be edited in Edit Mode. Post-processing volume data requires a scene with URP or HDRP volumes; without those packages installed, the Advanced sub-tab shows a package requirement notice.
 
-### Basic Sub-Tab
+---
+
+## Play Mode Behaviour
+
+In Play Mode, the tab shows live snapshot data. Each camera card updates every frame. FOV, near clip, and far clip can be edited live. Changes made in the camera card write back to the live `Camera` component immediately.
+
+---
+
+## Camera Card
+
+Each camera is shown in a collapsible card.
+
+**Header row:**
+- Camera name
+- Camera depth
+- **Enabled** toggle
+- **Sub-tab selector:** Basic / Advanced / Diagnostics
+
+### Basic Sub-tab
 
 | Field | Description |
 |-------|-------------|
-| **FOV** | Field of view in degrees. Editable via slider. |
-| **Presets** | One-click FOV presets: VR 90°, FPS 75°, Film 60°, Portrait 45°, Tele 30° |
-| **Near Clip** | Near clipping plane distance |
-| **Far Clip** | Far clipping plane distance |
-| **Depth** | Render depth (draw order) |
-| **Clear Flags** | Skybox, Solid Color, Depth Only, or Don't Clear |
-| **Culling Mask** | Rendered layer mask |
-| **Target Display** | Display output index |
+| Render Path | Forward / Deferred |
+| Clear Flags | SkyBox / Solid Color / Depth / Nothing |
+| Background | Background clear color |
+| Culling Mask | Bitmask of rendered layers |
+| Depth | Camera draw order |
+| FOV | Field of view in degrees (editable) |
+| Near Clip | Near clipping plane (editable) |
+| Far Clip | Far clipping plane (editable) |
+| Rect | Viewport rect (X, Y, W, H) |
+| Render Texture | Target render texture, if assigned |
+| Allow HDR | HDR rendering toggle |
+| Allow MSAA | MSAA toggle |
+| Allow Dynamic Resolution | Dynamic resolution toggle |
 
-### Advanced Sub-Tab
+### Advanced Sub-tab
 
-| Field | Description |
-|-------|-------------|
-| **Orthographic** | Toggle between perspective and orthographic projection |
-| **Orthographic Size** | Half-height of the orthographic view |
-| **HDR** | High dynamic range rendering |
-| **MSAA** | Multi-sample anti-aliasing level |
-| **Occlusion Culling** | Occlusion culling enabled state |
-| **Rendering Path** | Use Graphics Settings / Forward / Deferred |
-| **Target Texture** | Assigned `RenderTexture` (if any) |
-| **Allow Dynamic Resolution** | Dynamic resolution enabled state |
-
-### Diagnostics Sub-Tab
+Shows post-processing volumes in the scene (requires URP or HDRP). For each volume:
 
 | Field | Description |
 |-------|-------------|
-| **Position** | World-space position (read-only, live) |
-| **Rotation** | World-space Euler angles (read-only, live) |
-| **Clip Ratio Warning** | Shown when `Far / Near > 3333:1` — indicates potential depth precision loss |
-| **ACTIVE indicator** | Green badge — camera rendered this frame |
+| Enabled | Whether the volume is active |
+| Scope | Global or Local |
+| Name | Volume GameObject name |
+| Weight | Blend weight slider (0–1, editable) |
+
+### Diagnostics Sub-tab
+
+| Check | Condition flagged |
+|-------|------------------|
+| Multiple cameras at same depth | Two or more cameras share the same depth value |
+| Camera disabled but exists | `Camera` component is disabled — may be intentional but worth noting |
+| No render texture assigned | Applicable when the camera is expected to render to a texture |
 
 ---
 
-## Alerts Generated
+## Alert Integration
 
-The Camera tab contributes the following alerts to the Alert system:
+The Camera node generates alerts for the following conditions:
 
-| Condition | Severity | Description |
-|-----------|----------|-------------|
-| Far/Near clip ratio > 3333:1 | Warning | High clip ratio degrades depth buffer precision |
-| Multiple cameras with equal depth | Warning | Cameras at the same depth render in undefined order |
-| Camera with no culling layers | Info | Camera renders nothing |
+| Alert | Severity |
+|-------|---------|
+| Multiple cameras rendering to the same depth | Warning |
+| Camera with no culling mask layers | Warning |
 
-Alerts are visible in the **Alerts** tab and the stats bar count.
-
----
-
-## Live Editing
-
-Property changes made in the Camera tab take effect immediately during Play Mode. Changes are not persisted to the scene — they revert when Play Mode exits. To persist changes, apply them directly to the scene object in the Inspector after exiting Play Mode.
-
----
-
-## Ping and Navigation
-
-Each camera card includes **Ping** and **Copy Path** buttons:
-
-- **Ping** — highlights the camera's GameObject in the Hierarchy window.
-- **Copy Path** — copies the full scene hierarchy path to the clipboard.
+Alerts appear in the **Alerts** tab and persist for the session until dismissed.

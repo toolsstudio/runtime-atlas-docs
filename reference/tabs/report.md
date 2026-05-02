@@ -1,58 +1,53 @@
 # Report Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Assembles current session data into a structured report and exports it in one of four formats. Reports capture the state of all monitored subsystems at the time of generation.
+Generates a session report from the current Runtime Atlas data and exports it to a file. Reports include project metadata, frame statistics, all alerts, and all scanner results.
 
 ---
 
 ## Generating a Report
 
-1. Open the **Report** tab.
-2. Click **Generate Preview** to assemble the report data.
-3. The preview panel shows the report summary.
-4. Select an export format.
-5. Click **Export**.
-6. Choose a destination folder. The file is written immediately.
+1. Click **Generate Preview**. The report is assembled from the current session state.
+2. Review the preview in the text area.
+3. Select an export format: JSON / HTML / Markdown / CSV / DOCX.
+4. Click **Export** and choose a destination folder.
 
-Reports can be generated at any time — during Play Mode or after. Data reflects the most recent recorded state.
-
----
-
-## Report Contents
-
-| Section | Description |
-|---------|-------------|
-| **Project name** | Unity project name |
-| **Unity version** | Unity Editor version |
-| **Platform** | Current build target platform |
-| **Date** | Export timestamp |
-| **Session duration** | Elapsed Play Mode time in seconds |
-| **Total frames** | Frame count recorded |
-| **Average FPS** | Mean FPS across all recorded samples |
-| **Min / Max FPS** | Minimum and maximum recorded FPS |
-| **Average memory (MB)** | Mean GC heap size |
-| **Peak memory (MB)** | Maximum recorded GC heap size |
-| **Total alerts** | All alerts (including dismissed) |
-| **Critical / Warning / Info counts** | Alert breakdown by severity |
-| **Scanner issues** | Total issue count from the last scan |
-| **Alert list** | All individual alerts with severity, message, source, and time |
-| **Scan results** | All scanner results with file, line, issue, category, and severity |
-| **Frame data** | Per-frame FPS, memory, and time (included in JSON and CSV) |
+The file is written immediately. The export path is logged in the Unity Console.
 
 ---
 
 ## Export Formats
 
 | Format | File extension | Use case |
-|--------|---------------|----------|
-| JSON | `.json` | Programmatic processing, CI integration |
-| HTML | `.html` | Shareable report, browser viewing |
-| Markdown | `.md` | Documentation, GitHub issues, plain text review |
-| CSV | `.csv` | Spreadsheet import, data analysis |
+|--------|---------------|---------|
+| JSON | `.json` | Machine-readable; import into other tools |
+| HTML | `.html` | Human-readable report with formatting |
+| Markdown | `.md` | Documentation embedding |
+| CSV | `.csv` | Spreadsheet import |
+| DOCX | `.docx` | Word-compatible deliverable |
+| XML | `.xml` | Structured data interchange |
+| YAML | `.yml` | Config-style data |
 
-See [Report Export Guide](../../guides/report-export.md) for format details and field mapping.
+See [Report Export](../../guides/report-export.md) for a full field reference per format.
+
+---
+
+## Report Data Structure
+
+| Field | Source |
+|-------|--------|
+| Project name | `Application.productName` |
+| Company | `Application.companyName` |
+| Unity version | `Application.unityVersion` |
+| Platform | `Application.platform` |
+| Runtime Atlas version | `k_Version` constant |
+| Session duration | Time from Play Mode entry to report generation |
+| Camera snapshots | `CameraInspectorNode` snapshot list |
+| Audio snapshots | `AudioInspectorNode` snapshot list |
+| Alerts | `AlertSystem` log at generation time |
+| Scanner results | `ScriptScanner` results at generation time |
+| Performance samples | `PerformanceProfiler` recorded samples |

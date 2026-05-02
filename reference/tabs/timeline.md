@@ -1,56 +1,51 @@
 # Timeline Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Records a circular buffer of per-frame snapshots during Play Mode and provides scrubbing playback after recording stops. Allows post-session review of how runtime values evolved over time.
+Records a circular buffer of frame snapshots and allows scrubbing through them to review past state. Useful for reviewing what happened immediately before a problem was observed.
 
 ---
 
 ## Recording
 
-The Timeline begins recording automatically when Play Mode starts. It uses a circular buffer — once the buffer is full, the oldest frames are overwritten. Recording stops when Play Mode exits, preserving the buffer for playback.
+The timeline records automatically during Play Mode. The buffer size is configurable in settings (default: 300 frames). When the buffer is full, oldest frames are overwritten (FIFO).
 
-### Per-Frame Snapshot Fields
+Each recorded `FrameData` contains:
 
 | Field | Description |
 |-------|-------------|
-| **Timestamp** | Editor time in seconds when the frame was sampled |
-| **FPS** | Frame rate at this sample |
-| **MemoryMB** | GC heap size in MB |
-| **ActiveCameras** | Number of active cameras this frame |
-| **PlayingAudio** | Number of playing audio sources this frame |
-| **AlertCount** | Total non-dismissed alert count this frame |
-| **CameraFOV** | FOV of the first active camera (degrees) |
-| **MaxAudioVolume** | Volume of the loudest playing source |
+| Frame index | `Time.frameCount` at capture time |
+| Frame time (ms) | Frame duration |
+| FPS | Instantaneous FPS |
+| GC Heap (MB) | GC heap at capture |
+| Camera count | Active camera count at capture |
+| Source count | Active audio source count at capture |
+| Alert count | Active alert count at capture |
 
 ---
 
 ## Playback Controls
 
-After recording, the Timeline tab shows a scrub bar and playback controls:
-
 | Control | Action |
 |---------|--------|
-| **◀◀** | Jump to first frame |
-| **◀** | Step one frame backward |
-| **▶ / ❙❙** | Play / pause automatic playback |
-| **▶▶** | Jump to last frame |
-| **Scrub bar** | Click or drag to navigate to any recorded frame |
+| Scrubber | Drag to seek to any recorded frame |
+| **◀** | Step back one frame |
+| **▶** | Step forward one frame |
+| **▶▐▐** | Play/pause continuous playback |
 
-Playback replays the stored snapshot values — it does not re-run game logic.
-
----
-
-## Buffer Capacity
-
-The default buffer capacity is set in the Timeline settings panel (accessible via the ⚙ icon in the window header). Increasing capacity increases memory usage during recording.
+Playback replays the recorded data in the display — it does not rewind the Unity scene.
 
 ---
 
-## Relationship to the Report
+## Mini-Graph
 
-Timeline frame data is included in exported session reports. See [Report Export](../../guides/report-export.md) for format details.
+Above the scrubber, a mini-graph shows the frame time profile across the full buffer. Peaks indicate frames that took longer than usual. Hover over a peak to see the exact frame index and time value.
+
+---
+
+## Limitations
+
+The timeline buffer is cleared on Play Mode exit. It is not persisted across sessions. Maximum buffer size is bounded by memory; reduce the configured frame count for projects with large scenes.

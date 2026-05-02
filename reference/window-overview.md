@@ -1,16 +1,17 @@
 # Window Overview
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Opening the Window
 
 ```
-Window > Runtime Atlas > Open    Ctrl+Alt+R
+Window > Runtime Atlas > Open    (Ctrl+Alt+R)
 ```
 
-The window is a standard dockable Unity `EditorWindow`. It can be docked, floated, or tabbed alongside any other Unity window.
+The window is a standard dockable Unity `EditorWindow`. It can be docked, floated, or tabbed alongside any other Unity panel.
+
+Minimum window size: approximately 520 × 300 px. Below this size some tab content may clip.
 
 ---
 
@@ -21,10 +22,10 @@ The window is a standard dockable Unity `EditorWindow`. It can be docked, floate
 │  Header Bar                                          │
 │  Runtime Atlas   LIVE   168 FPS   ⚙                │
 ├─────────────────────────────────────────────────────┤
-│  Tab Row 1                                           │
+│  Tab Row 1 (Runtime Systems)                         │
 │  Camera │ Audio │ Graph │ Timeline │ Alerts │ ...   │
 ├─────────────────────────────────────────────────────┤
-│  Tab Row 2                                           │
+│  Tab Row 2 (Tools)                                   │
 │  Scanner │ Optimizer │ Scripts │ Inspector │ ...    │
 ├─────────────────────────────────────────────────────┤
 │  Stats Bar                                           │
@@ -40,27 +41,27 @@ The window is a standard dockable Unity `EditorWindow`. It can be docked, floate
 
 ## Header Bar
 
-The header bar is always visible regardless of which tab is active.
+Always visible regardless of the active tab.
 
 | Element | Description |
 |---------|-------------|
 | **Runtime Atlas** | Window title |
-| **LIVE** | Green indicator — window is connected and updating |
-| **FPS** | Current frames per second (updates every frame in Play Mode) |
-| **⚙ (Settings)** | Opens the Runtime Atlas settings panel |
+| **LIVE** | Green indicator — window is connected and polling |
+| **FPS** | Current frames per second, updated each frame in Play Mode |
+| **⚙** | Opens Edit > Project Settings > Runtime Atlas |
 
 ---
 
 ## Stats Bar
 
-The stats bar shows aggregate counts updated each frame:
+Aggregate counts updated each frame.
 
-| Field | Description |
-|-------|-------------|
-| **Cameras** | Number of active `Camera` components found in the scene |
-| **Sources** | Number of active `AudioSource` components |
-| **Alerts** | Number of non-dismissed alerts currently active |
-| **Frame** | Current `Time.frameCount` |
+| Field | Source |
+|-------|--------|
+| **Cameras** | Active `Camera` components in the current scene |
+| **Sources** | Active `AudioSource` components in the current scene |
+| **Alerts** | Non-dismissed alerts currently in the `AlertSystem` log |
+| **Frame** | `Time.frameCount` |
 | **GC Mem** | Current GC heap size in MB |
 | **Mode** | `PLAY` during Play Mode, `EDIT` in Edit Mode |
 
@@ -68,7 +69,7 @@ The stats bar shows aggregate counts updated each frame:
 
 ## Tab Layout
 
-Tabs are split across two rows.
+Tabs are arranged in two rows.
 
 **Row 1 — Runtime Systems**
 
@@ -80,29 +81,27 @@ Tabs are split across two rows.
 | 3 | Timeline | Circular frame snapshot playback |
 | 4 | Alerts | Aggregated diagnostic alerts |
 | 5 | Profiler | Frame time, FPS, GC, and draw call recording |
-| 6 | Physics | Scene rigidbody and physics statistics |
+| 6 | Physics | Rigidbody, collider, and layer matrix |
 
 **Row 2 — Tools**
 
 | Index | Tab | Purpose |
 |-------|-----|---------|
-| 7 | Scanner | C# script issue detection |
-| 8 | Optimizer | Suggestions derived from scanner results |
+| 7 | Scanner | Static C# script issue detection |
+| 8 | Optimizer | Fix suggestions from scanner results |
 | 9 | Scripts | Script file viewer with line navigation |
 | 10 | Inspector | Component inspector for selected GameObject |
 | 11 | Animator | Animator parameter and state monitor |
 | 12 | Mixer | Audio Mixer parameter viewer |
-| 13 | Scene | Scene hierarchy and object overview |
+| 13 | Scene | Scene object counts and search |
 | 14 | Report | Session report generation and export |
-| 15 | Console | Prefixed log capture (`[RA]` tagged messages) |
+| 15 | Console | Prefixed log capture |
 | 16 | Materials | Scene material and shader overview |
-| 17 | About | Package version, publisher information |
+| 17 | About | Version and publisher information |
 
 ---
 
-## Individual Tab Documentation
-
-Each tab is documented separately:
+## Tab Documentation
 
 - [Camera](tabs/camera.md)
 - [Audio](tabs/audio.md)

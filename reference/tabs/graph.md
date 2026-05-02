@@ -1,38 +1,45 @@
 # Graph Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Displays a live node-link diagram showing the runtime relationships between cameras, audio sources, the alert system, and the profiler during Play Mode.
+Displays runtime node relationships between cameras, audio sources, and the alert system as an interactive node graph. The graph updates during Play Mode when the window is visible.
 
 ---
 
-## Layout
-
-Nodes are arranged automatically based on system type:
+## Nodes
 
 | Node type | Represents |
 |-----------|-----------|
-| **Camera node** | Each active `Camera` component |
-| **Audio node** | Each active `AudioSource` and the `AudioListener` |
-| **Alert node** | The alert system and its current alert count |
-| **Profiler node** | Current frame time and FPS summary |
-
-Edges between nodes indicate data flow — for example, a camera node connected to the alert system node indicates that camera is generating active alerts.
+| Camera | A `Camera` component in the scene |
+| Audio Source | An `AudioSource` component |
+| Alert System | The `AlertSystem` singleton |
 
 ---
 
-## Interaction
+## Edges
 
-- The graph is read-only during Play Mode.
-- Clicking a node focuses the corresponding tab (clicking a Camera node navigates to the Camera tab).
-- The graph redraws on each editor repaint cycle.
+Edges between nodes represent logical relationships:
+
+- Camera → Alert System: the camera node feeds alerts to the alert system
+- Audio Source → Alert System: the audio node feeds alerts to the alert system
 
 ---
 
-## Notes
+## Navigation
 
-The graph is a diagnostic aid, not a scene graph or full dependency map. It reflects the subset of scene systems that Runtime Atlas actively monitors.
+| Action | Input |
+|--------|-------|
+| Pan | Middle-mouse drag, or right-mouse drag |
+| Zoom | Scroll wheel |
+| Select node | Left-click |
+| Move node | Left-click and drag |
+| Reset layout | **Reset Layout** button |
+
+---
+
+## Limitations
+
+The Graph tab shows the tool's own internal module graph — it does not represent scene graph relationships, prefab hierarchies, or component dependencies. It is a diagnostic view of how Runtime Atlas modules connect to each other.

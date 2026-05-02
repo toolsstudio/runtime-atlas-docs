@@ -1,42 +1,41 @@
 # Scripts Tab
-
-**Runtime Atlas v1.1.0**
+**Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Displays the source code of any script file in the project. Used to review code directly within the Runtime Atlas window, typically navigated to from Scanner or Optimizer results.
+A read-only source file viewer with line number navigation. Opens files from within the editor without switching to an external IDE.
 
 ---
 
-## Opening a Script
+## Opening a File
 
-Scripts are opened in this tab by:
+Files can be opened in the Scripts tab from:
 
-- Clicking **Open** on a Scanner result row
-- Clicking **Open** on an Optimizer suggestion card
-- Navigating via `Window > Runtime Atlas > Tabs > Inspector` (which activates the Scripts viewer inside the Inspector tab workflow)
+- Clicking a file path in the Scanner results list
+- Directly, via the file browser in the Scripts tab itself
+
+---
+
+## Navigation
+
+| Control | Action |
+|---------|--------|
+| Line number field | Type a line number and press Enter to jump to it |
+| Scroll | Mouse wheel or drag the scroll bar |
+| File browser | Click the folder icon to open a different file |
 
 ---
 
 ## Display
 
-The viewer renders source code with line numbers. The view scrolls to the flagged line automatically when opened from a Scanner or Optimizer result.
+The file is rendered as virtualized visible lines — only lines currently in the scroll viewport are drawn. This allows large files (10,000+ lines) to be scrolled without editor lag.
 
-### Features
-
-| Feature | Description |
-|---------|-------------|
-| **Line numbers** | Displayed in the gutter |
-| **Scroll-to-line** | Automatically scrolls to the target line on open |
-| **Virtualized rendering** | Only visible lines are drawn — large files do not cause performance issues |
-| **Read-only** | The viewer is display-only; editing is not supported |
+Lines are displayed with line numbers. No syntax highlighting is applied.
 
 ---
 
 ## Limitations
 
-- Syntax highlighting is not applied. Source is displayed as plain text.
-- Binary or non-UTF-8 files are not supported.
-- Only files within the Unity `Assets/` directory can be opened.
+The Scripts tab is read-only. Editing requires opening the file in the IDE (double-clicking the file in the Project window).
