@@ -12,9 +12,9 @@ Runtime Atlas is a paid Unity Editor diagnostic toolkit. It provides live camera
 
 | Platform | Link |
 |----------|------|
-| Unity Asset Store | https://assetstore.unity.com/packages/slug/367424 |
-| itch.io | https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit |
-| Gumroad | https://toolsstudio.gumroad.com/l/runtime-atlas |
+| [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424) |
+| [itch.io Page](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit) |
+| [Gumroad Store](https://toolsstudio.gumroad.com/l/runtime-atlas) |
 
 All platforms deliver the same package.
 
@@ -22,7 +22,7 @@ All platforms deliver the same package.
 
 ## Support
 
-- **Discord:** https://discord.gg/g5sNBZHZBd — primary support channel (`#runtime-atlas`)
+- **Discord:** [Join Discord](https://discord.gg/g5sNBZHZBd) — primary support channel (`#runtime-atlas`)
 - **Platform support:** For purchase, refund, or licensing issues, use the support channel on the platform you purchased from.
 
 See [SUPPORT.md](SUPPORT.md) for full contact guidance.
@@ -107,7 +107,7 @@ Window > Runtime Atlas > Open    (Ctrl+Alt+R)
 
 **MetaGuard** is a free, separate tool from Tools Studio that addresses Unity `.meta` file and GUID integrity. It is not bundled with Runtime Atlas.
 
-- Source and download: https://github.com/Afterix-Hub/MetaGuard
-- Documentation: https://github.com/toolsstudio/metaguard-docs
+- Source and download: [MetaGuard on GitHub](https://github.com/Afterix-Hub/MetaGuard)
+- Documentation: [MetaGuard Documentation](https://github.com/toolsstudio/metaguard-docs)
 
 The two tools address different problem classes. Runtime Atlas monitors runtime behaviour during Play Mode. MetaGuard operates outside Play Mode on the project file-system layer. They do not overlap in function.

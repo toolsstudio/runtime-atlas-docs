@@ -11,7 +11,7 @@ Check [Troubleshooting](troubleshooting.md) first. It covers the most common ins
 
 ## Community Support
 
-**Discord:** https://discord.gg/g5sNBZHZBd
+**Discord:** [Join Discord](https://discord.gg/g5sNBZHZBd)
 
 Post in the `#runtime-atlas` channel. Include:
 
@@ -41,12 +41,12 @@ Runtime Atlas is a paid product.
 
 | Platform | Link |
 |----------|------|
-| Unity Asset Store | https://assetstore.unity.com/packages/slug/367424 |
-| itch.io | https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit |
-| Gumroad | https://toolsstudio.gumroad.com/l/runtime-atlas |
+| [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424) |
+| [itch.io Page](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit) |
+| [Gumroad Store](https://toolsstudio.gumroad.com/l/runtime-atlas) |
 
 ---
 
 ## Related Tools
 
-**MetaGuard** is a free, separate tool from Tools Studio for Unity `.meta` file and GUID integrity. It is not related to Runtime Atlas. For MetaGuard issues, use the MetaGuard issue tracker: https://github.com/Afterix-Hub/MetaGuard
+**MetaGuard** is a free, separate tool from Tools Studio for Unity `.meta` file and GUID integrity. It is not related to Runtime Atlas. For MetaGuard issues, use the [MetaGuard issue tracker](https://github.com/Afterix-Hub/MetaGuard)

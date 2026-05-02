@@ -9,9 +9,9 @@ Runtime Atlas is a paid product. Purchase it before following the import steps.
 
 | Platform | Link |
 |----------|------|
-| Unity Asset Store | https://assetstore.unity.com/packages/slug/367424 |
-| itch.io | https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit |
-| Gumroad | https://toolsstudio.gumroad.com/l/runtime-atlas |
+| [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424) |
+| [itch.io Page](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit) |
+| [Gumroad Store](https://toolsstudio.gumroad.com/l/runtime-atlas) |
 
 Source code is not included.
 
