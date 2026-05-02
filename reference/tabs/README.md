@@ -1,25 +1,35 @@
-# Tab Reference Index
+# Tab Reference
+
 **Runtime Atlas v1.2.0**
 
-All 18 tabs, in window order.
+All 18 Runtime Atlas tabs are documented individually.
 
-| Index | Tab | Document |
-|-------|-----|---------|
-| 0 | Camera | [camera.md](camera.md) |
-| 1 | Audio | [audio.md](audio.md) |
-| 2 | Graph | [graph.md](graph.md) |
-| 3 | Timeline | [timeline.md](timeline.md) |
-| 4 | Alerts | [alerts.md](alerts.md) |
-| 5 | Profiler | [profiler.md](profiler.md) |
-| 6 | Physics | [physics.md](physics.md) |
-| 7 | Scanner | [scanner.md](scanner.md) |
-| 8 | Optimizer | [optimizer.md](optimizer.md) |
-| 9 | Scripts | [scripts.md](scripts.md) |
-| 10 | Inspector | [inspector.md](inspector.md) |
-| 11 | Animator | [animator.md](animator.md) |
-| 12 | Mixer | [mixer.md](mixer.md) |
-| 13 | Scene | [scene.md](scene.md) |
-| 14 | Report | [report.md](report.md) |
-| 15 | Console | [console.md](console.md) |
-| 16 | Materials | [materials.md](materials.md) |
-| 17 | About | (no separate document — displays version and publisher info) |
+---
+
+## Row 1 — Runtime Systems
+
+| Tab | Description |
+|-----|-------------|
+| [Camera](camera.md) | Live camera diagnostics and property editor |
+| [Audio](audio.md) | AudioListener and AudioSource monitoring |
+| [Graph](graph.md) | Runtime node relationship diagram |
+| [Timeline](timeline.md) | Circular frame snapshot recorder and scrub playback |
+| [Alerts](alerts.md) | Aggregated diagnostic alerts |
+| [Profiler](profiler.md) | Frame time, FPS, GC, and draw call recording |
+| [Physics](physics.md) | Scene rigidbody and physics statistics |
+
+## Row 2 — Tools
+
+| Tab | Description |
+|-----|-------------|
+| [Scanner](scanner.md) | C# script issue detection |
+| [Optimizer](optimizer.md) | Actionable suggestions from scanner results |
+| [Scripts](scripts.md) | Script file viewer with line navigation |
+| [Inspector](inspector.md) | Component inspector with pinning and history |
+| [Animator](animator.md) | Animator parameter and state monitor |
+| [Mixer](mixer.md) | Audio Mixer parameter viewer |
+| [Scene](scene.md) | Scene hierarchy and object statistics |
+| [Report](report.md) | Session report generation and export |
+| [Console](console.md) | Prefixed log capture |
+| [Materials](materials.md) | Scene material and shader overview |
+| [About](about.md) | Version and publisher information |

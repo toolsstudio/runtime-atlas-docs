@@ -1,50 +1,58 @@
 # Materials Tab
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Lists all `Renderer` components in the scene with their assigned materials and shader information. Provides a searchable overview of the scene's material usage.
+Provides an overview of materials and shaders used by `Renderer` components in the active scene. Helps identify material count, shader distribution, and instanced material issues.
 
 ---
 
-## Data Collection
+## Scene Statistics
 
-Material data is polled every 4 Hz to avoid scene traversal overhead. The cache holds up to 512 material descriptors (LRU eviction). Projects with more than 512 unique materials will experience eviction of oldest entries.
-
----
-
-## Renderer List
-
-Each row represents one `Renderer` in the scene:
-
-| Column | Description |
-|--------|-------------|
-| GameObject | Renderer's GameObject name |
-| Renderer type | MeshRenderer / SkinnedMeshRenderer / SpriteRenderer / etc. |
-| Material name | Primary material name |
-| Shader | Shader name |
-| Shader keywords | Active shader keywords (comma-separated) |
-| Texture count | Number of textures referenced by the material |
+| Statistic | Description |
+|-----------|-------------|
+| **Total materials** | Unique material assets used across all renderers |
+| **Total renderers** | `Renderer` components in the scene |
+| **Unique shaders** | Distinct shaders across all materials |
+| **Instance materials** | Materials instantiated at runtime (accessed via `Renderer.material` not `sharedMaterial`) |
 
 ---
 
-## Search
+## Material List
 
-The search field filters by GameObject name, material name, or shader name.
+Each material entry:
+
+| Field | Description |
+|-------|-------------|
+| **Name** | Material asset name |
+| **Shader** | Assigned shader name |
+| **Renderer count** | Number of renderers using this material |
+| **Instanced** | Whether this material was instantiated (i.e., differs from `sharedMaterial`) |
+| **Keywords** | Active shader keyword list |
 
 ---
 
-## Material Detail Panel
+## Shader Summary
 
-Clicking a row expands a detail panel showing all material properties from the shader:
+Groups materials by shader:
 
-| Property type | Display |
-|---------------|---------|
-| Float | Value with label |
-| Color | Colour swatch |
-| Texture | Texture name and ping button |
-| Vector | X / Y / Z / W values |
+| Field | Description |
+|-------|-------------|
+| **Shader name** | Full shader path (e.g., `Standard`, `Universal Render Pipeline/Lit`) |
+| **Material count** | Materials using this shader |
+| **Renderer count** | Total renderers affected |
 
-Properties are read-only in this view. To edit material properties, use the Unity Inspector.
+---
+
+## Instanced Material Detection
+
+Materials accessed via `Renderer.material` (rather than `Renderer.sharedMaterial`) are instantiated by Unity and flagged as instanced. Each instance consumes separate GPU memory and breaks GPU instancing for those renderers. The Materials tab makes these visible.
+
+---
+
+## Refresh
+
+Data is populated on tab activation. Click the tab again or press **Refresh** to re-poll. The tab does not update continuously.

@@ -1,69 +1,57 @@
 # Audio Tab
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Displays all `AudioSource` components and the `AudioListener` status. In Play Mode, data comes from live snapshots. In Edit Mode, the source list is refreshed at most once per second.
+Monitors all `AudioSource` components and the `AudioListener` in the scene. Reports playback state, volume levels, and spatial configuration. Raises alerts for common audio setup issues.
+
+Available in Play Mode only. Data updates every editor frame.
 
 ---
 
-## AudioListener Status
-
-The top row of the tab shows the current `AudioListener` status:
-
-| State | Badge |
-|-------|-------|
-| Exactly one listener found | OK (green) |
-| No listener found | NOT FOUND (red) |
-| Multiple listeners found | MULTIPLE (n) (yellow) |
-
-Unity requires exactly one active `AudioListener` in the scene for audio to function correctly. Multiple listeners produce undefined mixing behaviour.
-
----
-
-## AudioSource Cards
-
-Each `AudioSource` is shown in a card.
-
-**Header row:**
-- Source name
-- Playing state badge (PLAYING / PAUSED / STOPPED)
-- Enabled toggle
-- Volume slider
-
-### Fields
+## Listener Section
 
 | Field | Description |
 |-------|-------------|
-| Clip | Clip name, or "(none)" if no clip assigned |
-| Playing | Whether the source is currently playing |
-| Volume | 0.0 – 1.0 |
-| Pitch | Pitch multiplier |
-| Spatial Blend | 0 = fully 2D, 1 = fully 3D |
-| Loop | Loop toggle |
-| Mute | Mute toggle |
-| Min Distance | 3D audio attenuation start distance |
-| Max Distance | 3D audio attenuation end distance |
-| Level Meter | Approximate current output level (visual bar) |
-| Playback Position | Current playback time / clip length (Play Mode only) |
+| **Listener** | GameObject name hosting the `AudioListener` |
+| **Volume** | `AudioListener.volume` — global volume scale (0–1) |
+| **Pause** | `AudioListener.pause` state |
 
-### Playback Controls (Play Mode)
-
-| Button | Action |
-|--------|--------|
-| ▶ Play | `source.Play()` |
-| ▐▐ Pause | `source.Pause()` |
-| ■ Stop | `source.Stop()` |
+If no `AudioListener` is present, a Warning alert is raised. If more than one is present, a second Warning is raised.
 
 ---
 
-## Alert Integration
+## Sources Section
 
-| Alert | Severity |
-|-------|---------|
-| No AudioListener in scene | Critical |
-| Multiple AudioListeners in scene | Warning |
-| AudioSource with no clip assigned | Info |
-| AudioSource looping in Play Mode | Info |
+Each `AudioSource` renders as a row.
+
+| Field | Description |
+|-------|-------------|
+| **Name** | GameObject name |
+| **Clip** | Assigned `AudioClip` name (`—` if none assigned) |
+| **Playing** | Whether the source is actively playing |
+| **Volume** | Source volume (0–1) |
+| **Pitch** | Pitch multiplier |
+| **Loop** | Loop enabled state |
+| **Spatial Blend** | 0 = fully 2D, 1 = fully 3D |
+| **Priority** | Output priority (0 = highest) |
+| **Mute** | Mute state |
+
+---
+
+## Alerts Generated
+
+| Condition | Severity |
+|-----------|----------|
+| No `AudioListener` in scene | Warning |
+| More than one `AudioListener` in scene | Warning |
+| Source playing with volume = 0 | Info |
+
+---
+
+## Audio Mixer
+
+The Audio tab covers `AudioSource` components only. For `AudioMixer` parameter inspection, see the [Mixer tab](mixer.md) and [Audio Mixer Setup](../../guides/audio-mixer-setup.md).

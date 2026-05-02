@@ -1,89 +1,117 @@
 # Report Generator API
+
+**Namespace:** `RuntimeAtlas.Editor`  
+**Assembly:** `RuntimeAtlas.Editor`  
 **Runtime Atlas v1.2.0**
 
 ---
 
-## Assembly
-
-`RuntimeAtlas.Editor` | Namespace: `RuntimeAtlas.Editor`
-
----
-
-## ReportData
+## `RAReportGenerator` class
 
 ```csharp
-public sealed class ReportData
-{
-    public string              ProjectName      { get; set; }
-    public string              CompanyName      { get; set; }
-    public string              UnityVersion     { get; set; }
-    public string              Platform         { get; set; }
-    public string              RAVersion        { get; set; }
-    public string              GeneratedAt      { get; set; }
-    public float               SessionDuration  { get; set; }
-    public List<CameraSnapshot>   Cameras       { get; set; }
-    public List<AudioSnapshot>    AudioSources  { get; set; }
-    public List<AlertEntry>       Alerts        { get; set; }
-    public List<ScanResult>       ScannerResults{ get; set; }
-    public List<PerfSample>       PerfSamples   { get; set; }
-}
-```
+namespace RuntimeAtlas.Editor
 
-`ReportData` is populated by `RAReportGenerator.Collect()` and then passed to an export method.
-
----
-
-## RAReportGenerator
-
-```csharp
 public sealed class RAReportGenerator
 ```
 
-**Collecting data:**
-
-```csharp
-public ReportData Collect(
-    CameraInspectorNode  cameraNode,
-    AudioInspectorNode   audioNode,
-    AlertSystem          alertSystem,
-    ScriptScanner        scanner,
-    PerformanceProfiler  profiler
-);
-```
-
-Assembles a `ReportData` from the current state of all provided modules. Called by the Report tab when **Generate Preview** is clicked.
-
-**Exporting:**
-
-```csharp
-public string ExportJSON    (ReportData data, string folderPath);
-public string ExportHTML    (ReportData data, string folderPath);
-public string ExportMarkdown(ReportData data, string folderPath);
-public string ExportCSV     (ReportData data, string folderPath);
-public string ExportDOCX    (ReportData data, string folderPath);
-public string ExportXML     (ReportData data, string folderPath);
-public string ExportYAML    (ReportData data, string folderPath);
-```
-
-Each method writes a file to `folderPath` and returns the full path of the written file. The filename is generated as `RuntimeAtlas_Report_<timestamp>.<ext>`.
-
-Throws `System.IO.IOException` if the path is not writable.
+Assembles session data from all monitored subsystems and writes it to disk in JSON, HTML, Markdown, CSV, or DOCX format.
 
 ---
 
-## ExportFormat Enum
+## `ReportData` class
 
 ```csharp
-public enum ExportFormat
-{
-    JSON,
-    HTML,
-    Markdown,
-    CSV,
-    DOCX,
-    XML,
-    YAML
-}
+public sealed class ReportData
 ```
 
-Used by the Report tab UI to select the active format before calling Export.
+Holds the complete data set for one report. Populated by `RAReportPanel` before export.
+
+### Session Fields
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `ProjectName` | `string` | `Application.productName` |
+| `UnityVersion` | `string` | `Application.unityVersion` |
+| `Platform` | `string` | Active build target name |
+| `Date` | `string` | ISO 8601 timestamp at preview generation time |
+| `SessionDuration` | `float` | Elapsed Play Mode time in seconds |
+| `TotalFrames` | `int` | Profiler frames recorded |
+| `AvgFPS` | `float` | Mean FPS across recorded profiler frames |
+| `MinFPS` | `float` | Minimum recorded FPS |
+| `MaxFPS` | `float` | Maximum recorded FPS |
+| `AvgMemoryMB` | `float` | Mean GC heap size in MB |
+| `PeakMemoryMB` | `float` | Maximum recorded GC heap size in MB |
+| `TotalAlerts` | `int` | All alerts including dismissed |
+| `CriticalAlerts` | `int` | Critical-severity count |
+| `WarningAlerts` | `int` | Warning-severity count |
+| `InfoAlerts` | `int` | Info-severity count |
+| `ScannerIssues` | `int` | Total issues from the most recent scan |
+
+### Collections
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `Alerts` | `List<AlertExport>` | All alert entries |
+| `ScanResults` | `List<ScanExport>` | All scanner results |
+| `Frames` | `List<FrameExport>` | Per-frame performance samples |
+
+---
+
+## `AlertExport` struct
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `Severity` | `string` | `"Info"`, `"Warning"`, or `"Critical"` |
+| `Message` | `string` | Alert message text |
+| `Source` | `string` | Contributing system name |
+| `Time` | `string` | Formatted timestamp |
+
+---
+
+## `ScanExport` struct
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `File` | `string` | Asset-relative script path |
+| `Line` | `int` | Line number |
+| `Issue` | `string` | Issue description |
+| `Category` | `string` | Issue category |
+| `Severity` | `string` | `"Info"`, `"Warning"`, or `"Critical"` |
+
+---
+
+## `FrameExport` struct
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `Time` | `float` | Timestamp in seconds |
+| `FPS` | `float` | Frames per second |
+| `MemoryMB` | `float` | GC heap size in MB |
+
+---
+
+## Export Methods
+
+All methods are synchronous. File names follow:
+
+```
+RuntimeAtlas_Report_YYYY-MM-DD_HH-mm-ss.[ext]
+```
+
+Return value: output file path on success, `null` on failure.
+
+```csharp
+public string ExportJSON(ReportData data, string outputDirectory)
+
+public string ExportHTML(ReportData data, string outputDirectory)
+
+public string ExportMarkdown(ReportData data, string outputDirectory)
+
+// Writes two files: session summary and frame data.
+// Returns the summary file path.
+public string ExportCSV(ReportData data, string outputDirectory)
+
+public string ExportDOCX(ReportData data, string outputDirectory)
+```
+
+See [Report Export Guide](../guides/report-export.md) for per-format layout details and field mapping.

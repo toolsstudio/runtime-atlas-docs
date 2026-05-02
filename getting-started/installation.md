@@ -1,17 +1,18 @@
 # Installation
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Obtaining the Package
 
-Runtime Atlas is a paid product. Purchase it before following the import steps.
+Runtime Atlas is a paid product. Purchase before following these steps.
 
 | Platform | Link |
 |----------|------|
-| [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424) |
-| [itch.io Page](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit) |
-| [Gumroad Store](https://toolsstudio.gumroad.com/l/runtime-atlas) |
+| Unity Asset Store | [Unity Asset Store](https://assetstore.unity.com/packages/slug/367424) |
+| itch.io | [itch.io](https://tools-studio.itch.io/runtime-atlas-unity-debugging-performance-toolkit) |
+| Gumroad | [Gumroad](https://toolsstudio.gumroad.com/l/runtime-atlas) |
 
 Source code is not included.
 
@@ -21,12 +22,14 @@ Source code is not included.
 
 | Requirement | Value |
 |-------------|-------|
-| Unity minimum | 2021.3 LTS |
-| Unity maximum tested | Unity 6.x (6000.x) |
+| Unity (minimum) | 2021.3 LTS |
+| Unity (maximum tested) | Unity 6.x (6000.x) |
 | Render pipeline | Built-in, URP, HDRP |
 | Input backend | Any — Input System and legacy Input Manager both supported |
-| Editor platform | Windows, macOS, Linux |
-| Player build impact | None — Editor-only assembly |
+| Platform | Windows, macOS, Linux (Editor only) |
+| Third-party packages | None |
+
+Runtime Atlas is an Editor-only toolkit. It adds no overhead to player builds.
 
 ---
 
@@ -34,30 +37,26 @@ Source code is not included.
 
 ### From the Unity Asset Store
 
-1. Open **Package Manager** (`Window > Package Manager`).
+1. Open the Package Manager: `Window > Package Manager`.
 2. Select **My Assets**.
 3. Locate **Runtime Atlas** and click **Import**.
-4. Select all files in the import dialog and confirm.
-5. Wait for Unity to complete script compilation.
+4. Import all files.
+5. Let Unity complete script compilation. Expect one domain reload.
 
 ### From itch.io or Gumroad
 
-Purchases from itch.io and Gumroad deliver a `.unitypackage` file.
-
 1. Download the `.unitypackage` from your purchase page.
 2. In Unity: `Assets > Import Package > Custom Package`.
-3. Select the downloaded file, select all files in the dialog, and confirm.
-4. Wait for Unity to complete script compilation.
-
-### Upgrading From a Previous Version
-
-Delete `Assets/RuntimeAtlas` completely before importing the new version. Importing on top of an existing installation leaves stale files that cause issues. See the [Upgrade Guide](upgrade-guide.md) for version-specific steps.
+3. Select the downloaded file and import all files.
+4. Let Unity complete script compilation.
 
 ---
 
-## Validation
+## Post-Import Validation
 
-### Assembly Definitions Present
+### Assembly Definitions
+
+Verify these four files exist:
 
 ```
 Assets/RuntimeAtlas/Runtime/RuntimeAtlas.Core.asmdef
@@ -66,34 +65,34 @@ Assets/RuntimeAtlas/Editor/RuntimeAtlas.Editor.asmdef
 Assets/RuntimeAtlas/Editor/Demo/RuntimeAtlas.Editor.Demo.asmdef
 ```
 
-### Zero Compile Errors
+### Compile Check
 
-The Unity Console must show no compile errors before proceeding. See [Troubleshooting](../troubleshooting.md) if errors appear.
+Zero compile errors in the Unity Console. If errors appear, see [Troubleshooting](../troubleshooting.md).
 
-### Window Opens and Shows Correct Version
+### Window Opens
 
-1. `Window > Runtime Atlas > Open` (shortcut: `Ctrl+Alt+R`).
-2. The window opens and docks normally.
-3. The About tab and Project Settings page display **Version 1.2.0**.
+Open: `Window > Runtime Atlas > Open` or press `Ctrl+Alt+R`. The About tab must show **Version 1.2.0**.
 
 ---
 
-## First Run
+## Settings Asset
 
-On first import, Runtime Atlas shows a one-time dialog. Dismiss with **OK**. It will not reappear.
-
----
-
-## Settings Location
+Created automatically on first open at:
 
 ```
 Assets/RuntimeAtlas/Editor/Resources/RuntimeAtlasSettings.asset
 ```
 
-Access via **Edit > Project Settings > Runtime Atlas** or the gear icon (⚙) in the window header.
+Do not move or delete this file. If missing, reopen the window to recreate it with default values.
 
 ---
 
 ## Uninstall
 
-Delete `Assets/RuntimeAtlas`. No files are written outside this folder. EditorPrefs use the `RuntimeAtlas.*` prefix and are safe to leave.
+Delete `Assets/RuntimeAtlas`. No files are written outside this folder.
+
+---
+
+## Upgrading
+
+See [Upgrade Guide](upgrade-guide.md).

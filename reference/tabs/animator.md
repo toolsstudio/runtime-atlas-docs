@@ -1,47 +1,52 @@
 # Animator Tab
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Monitors `Animator` components in the scene. In Play Mode, shows live state machine state, parameter values, and transition info. In Edit Mode, lists all Animators with their controller assignment.
+Monitors `Animator` components active in the scene. Displays current state, layer info, and parameter values during Play Mode.
 
 ---
 
-## Edit Mode
+## Tracked Data
 
-Lists all `Animator` components in the scene with their GameObject name and assigned `RuntimeAnimatorController`. Click the jump icon to select the GameObject.
-
-The list is refreshed at most once per second.
-
----
-
-## Play Mode
-
-For each Animator with a valid controller:
-
-**State Info:**
+For each `Animator` found:
 
 | Field | Description |
 |-------|-------------|
-| Current State | Name of the current state in the base layer |
-| Normalized Time | Playback position within the current state (0–1) |
-| Layer count | Number of animation layers |
-
-**Parameters:**
-
-| Parameter type | Display |
-|----------------|---------|
-| Float | Editable slider |
-| Int | Editable integer field |
-| Bool | Toggle |
-| Trigger | Button (fires the trigger) |
-
-Parameter values can be read and written live from the Animator tab without modifying scene assets.
+| **Name** | GameObject name |
+| **Controller** | Assigned `RuntimeAnimatorController` asset name |
+| **Layer count** | Number of state machine layers |
+| **Current state** | Name of the playing state on layer 0 |
+| **Normalised time** | Playback position within the current state (0–1) |
+| **Speed** | Animator speed multiplier |
+| **Enabled** | Component enabled state |
 
 ---
 
-## Search Filter
+## Parameters
 
-The search field at the top of the tab filters animators by GameObject name.
+All `AnimatorControllerParameter` values are displayed per Animator:
+
+| Parameter type | Display |
+|----------------|---------|
+| `Float` | Numeric value |
+| `Int` | Numeric value |
+| `Bool` | `True` / `False` |
+| `Trigger` | `Active` / `Inactive` |
+
+---
+
+## Refresh
+
+The Animator list is populated by polling the scene on tab activation and on each **Refresh** button press. It does not update continuously in Edit Mode. In Play Mode, parameter values update every editor frame; the Animator list itself updates on each poll cycle.
+
+---
+
+## Notes
+
+- The Animator tab is read-only. Parameters cannot be set from this tab.
+- Parameter values update each editor frame during Play Mode. There is no write path.
+- Writes must go through `Animator.SetFloat`, `SetBool`, etc. in game code or via the Unity Animator window.

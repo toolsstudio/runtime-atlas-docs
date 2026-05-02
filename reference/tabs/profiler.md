@@ -1,65 +1,93 @@
 # Profiler Tab
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Records per-frame performance metrics. The tab contains a live graph and a scrollable sample list. Data is collected at up to 60 Hz during Play Mode. The profiler is paused automatically when the Runtime Atlas window is not visible.
+Records frame-accurate performance counters during Play Mode and displays them as a scrolling live graph. The hot recording path contains zero heap allocations.
 
 ---
 
-## Recorded Metrics
+## Recorded Counters
 
-| Metric | Description |
-|--------|-------------|
-| Frame Time (ms) | Time from start of previous frame to start of current frame |
-| FPS | 1000 / frame time |
-| GC Heap (MB) | Total allocated GC heap size |
-| GC Alloc (KB) | GC allocations in the current frame |
-| Draw Calls | Number of draw calls this frame (from `UnityStats`) |
-| Triangles | Triangle count (from `UnityStats`) |
-| Vertices | Vertex count (from `UnityStats`) |
+Each `PerfSample` captures:
 
-**Note:** `UnityStats` values reflect the full editor frame, not just game rendering. In Edit Mode all `UnityStats` values are zero.
+| Counter | Description |
+|---------|-------------|
+| **Frame time (ms)** | Duration of the frame in milliseconds |
+| **FPS** | Frames per second (`1000 / FrameMS`) |
+| **GC heap (MB)** | Total managed heap size at sample time |
+| **GC alloc delta (bytes)** | Change in heap allocation since the previous sample |
+| **Draw calls** | Number of draw call batches this frame |
+| **Triangles** | Total triangles rendered |
+| **Vertices** | Total vertices rendered |
+| **SetPass calls** | Number of shader pass changes |
 
 ---
 
-## Graph
+## Spike Detection Flags
 
-The graph plots frame time and FPS over the most recent N samples (N configurable in settings). The X axis is frame index; the Y axis auto-scales.
+Each sample is annotated with boolean flags derived from configurable thresholds:
+
+| Flag | Condition |
+|------|-----------|
+| `IsSlowFrame` | `FrameMS > SlowFrameThresholdMS` |
+| `IsGCSpike` | `GCAllocDelta > GCSpikeThresholdBytes` |
+
+---
+
+## Default Thresholds
+
+| Threshold | Default | Configurable |
+|-----------|---------|-------------|
+| Slow frame | 33.3 ms (≈ 30 FPS) | Yes — `SlowFrameThresholdMS` |
+| Critical frame | 50 ms (≈ 20 FPS) | Yes — `CriticalFrameThresholdMS` |
+| GC spike | 16 KB/frame | Yes — `GCSpikeThresholdBytes` |
+| GC warning alert | 64 KB/frame | Yes — `GCWarningThresholdBytes` |
+| GC critical alert | 256 KB/frame | Yes — `GCCriticalThresholdBytes` |
+| Slow frame alert trigger | 5 consecutive frames | Yes — `SlowFrameAlertCount` |
+| Alert cooldown | 2 seconds | Yes — `AlertCooldownSeconds` |
+
+See [Settings Reference](../settings.md) for descriptions of each threshold.
+
+---
+
+## Graph Display
+
+- **Y-axis (primary):** Frame time in ms
+- **Y-axis (secondary overlay):** GC alloc delta
+- **X-axis:** Frame index, most recent on the right
+- Slow frames: highlighted background
+- GC spikes: vertical marker indicators
+
+---
+
+## Controls
 
 | Control | Action |
 |---------|--------|
-| Stat label (legend) | Toggle that line on/off |
-| **Pause** / **Resume** | Pause or resume live recording |
-| **Clear** | Reset all recorded samples |
+| **Start** | Begin recording. Starts automatically on Play Mode entry. |
+| **Stop** | Pause recording. Buffer is preserved. |
+| **Reset** | Stop recording and clear all samples. |
+| **Export CSV** | Write the sample buffer to CSV via the Report system. |
 
 ---
 
-## Sample List
+## Alerts Generated
 
-Below the graph, a scrollable list shows all recorded `PerfSample` values in reverse chronological order (newest first).
+| Condition | Severity |
+|-----------|----------|
+| `SlowFrameAlertCount` consecutive frames above `SlowFrameThresholdMS` | Warning |
+| Any frame above `CriticalFrameThresholdMS` | Critical |
+| GC alloc delta above `GCWarningThresholdBytes` | Warning |
+| GC alloc delta above `GCCriticalThresholdBytes` | Critical |
 
-| Column | Content |
-|--------|---------|
-| Frame | `Time.frameCount` |
-| Time (ms) | Frame time in milliseconds |
-| FPS | Instantaneous FPS |
-| GC Heap | GC heap in MB |
-| GC Alloc | Per-frame allocation in KB |
-| Draw Calls | Draw call count |
+Profiler alerts respect `AlertCooldownSeconds` to prevent alert spam.
 
 ---
 
-## Thresholds
+## Report Relationship
 
-Alert thresholds are configurable in **Edit > Project Settings > Runtime Atlas**:
-
-| Threshold | Default |
-|-----------|---------|
-| Frame time warning (ms) | 33.3 (30 FPS) |
-| Frame time critical (ms) | 50.0 (20 FPS) |
-| GC alloc warning (KB/frame) | 64 |
-
-When a threshold is exceeded, the affected row in the sample list is tinted accordingly.
+Profiler frame data is the source of the `Frames` array in exported session reports. See [Report Generator API](../../api/report-generator.md).

@@ -1,41 +1,46 @@
 # Scripts Tab
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-A read-only source file viewer with line number navigation. Opens files from within the editor without switching to an external IDE.
+Displays the source code of any `.cs` file in the project. Used to review code in context after navigating from a Scanner result or Optimizer suggestion.
 
 ---
 
-## Opening a File
+## Opening a Script
 
-Files can be opened in the Scripts tab from:
+Scripts are opened from:
 
-- Clicking a file path in the Scanner results list
-- Directly, via the file browser in the Scripts tab itself
-
----
-
-## Navigation
-
-| Control | Action |
-|---------|--------|
-| Line number field | Type a line number and press Enter to jump to it |
-| Scroll | Mouse wheel or drag the scroll bar |
-| File browser | Click the folder icon to open a different file |
+- **Scanner** tab — clicking **Open** on a result row
+- **Optimizer** tab — clicking **Open** on a suggestion card
+- **Console** tab — clicking a log entry that has source file information
+- Drag-and-drop — dragging a `.cs` file from the Project window onto the drop zone at the top of the Scripts tab
 
 ---
 
-## Display
+## Drop Zone
 
-The file is rendered as virtualized visible lines — only lines currently in the scroll viewport are drawn. This allows large files (10,000+ lines) to be scrolled without editor lag.
+A drop target is rendered at the top of the tab. Drag any `.cs` file from the Project window onto it to open that file. Only `.cs` files are accepted.
 
-Lines are displayed with line numbers. No syntax highlighting is applied.
+---
+
+## Viewer Features
+
+| Feature | Description |
+|---------|-------------|
+| **Line numbers** | Displayed in the left gutter |
+| **Scroll-to-line** | Scrolls automatically to the target line when opened from a result |
+| **Virtualised rendering** | Only visible lines are drawn. Large files do not cause frame time spikes. |
+| **Read-only** | Display only. Editing is not supported. |
+| **Open in IDE** | Opens the current file at the current line in the external script editor configured in Unity Preferences |
 
 ---
 
 ## Limitations
 
-The Scripts tab is read-only. Editing requires opening the file in the IDE (double-clicking the file in the Project window).
+- No syntax highlighting. Source is displayed as plain text with line numbers.
+- Binary or non-UTF-8 files are not supported and will not render correctly.
+- Only files within the Unity `Assets/` directory can be opened.

@@ -1,38 +1,35 @@
 # Scanner Tab
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Performs static analysis on C# source files in the configured search path. Detects common performance and code quality issues without requiring compilation or Play Mode.
+Scans all C# script files in `Assets/` for common code quality issues. Results feed the Optimizer tab and can be included in exported session reports. The scan is always manual — it never runs automatically.
 
 ---
 
 ## Running a Scan
 
-1. Set the search path (defaults to `Assets/`).
+1. Open the **Scanner** tab.
 2. Click **Scan Scripts**.
-3. Wait for the scan to complete. Progress is shown in the button label.
-4. Review results in the result list.
+3. Wait for completion. Scan time scales with project size.
+4. Review results in the list. The tab header shows file count and issue count.
 
-The scan is synchronous. On large projects (thousands of files) it may cause a brief editor pause. This is a known limitation.
+The last scan timestamp is displayed above the results.
 
 ---
 
-## Detected Pattern Categories
+## Detected Issue Patterns
 
-| Category | Examples |
-|----------|---------|
-| Hot-path allocation | `new` inside `Update` / `FixedUpdate` / `LateUpdate` |
-| Uncached `GetComponent` | `GetComponent<T>()` result not stored in a variable |
-| `FindObjectsOfType` | Any call to find-all-objects methods |
-| `Camera.main` in hot path | `Camera.main` accessed inside `Update` |
-| `SendMessage` usage | `SendMessage` / `BroadcastMessage` calls |
-| `Debug.Log` in hot path | Log calls inside `Update`-family methods |
-| `Resources.Load` | Any `Resources.Load` call |
-| `print()` usage | `print()` calls (slower than `Debug.Log`) |
-| Unscaled transform access in loop | `transform.position` inside `for`/`foreach` without caching |
+| Category | Pattern | Severity |
+|----------|---------|----------|
+| Hot path | `FindObjectOfType<T>()` or `FindObjectsOfType<T>()` called inside any method other than `Awake` or `Start` | Warning |
+| Empty lifecycle | `Update()`, `FixedUpdate()`, or `LateUpdate()` with no body | Info |
+| Null safety | Method returning a reference type with no null check on the returned value at call sites | Info |
+
+Pattern matching operates on raw source text via regular expressions. The scanner does not compile or execute code and cannot perform semantic analysis.
 
 ---
 
@@ -40,27 +37,31 @@ The scan is synchronous. On large projects (thousands of files) it may cause a b
 
 | Field | Description |
 |-------|-------------|
-| File | Source file path (relative to `Assets/`) |
-| Line | Line number |
-| Issue | Human-readable description |
-| Category | Issue category |
-| Severity | Info / Warning / Critical |
-
-Clicking the file path opens the file in the Scripts tab at the relevant line.
-
----
-
-## Controls
-
-| Control | Action |
-|---------|--------|
-| **Scan Scripts** | Run the scan |
-| **Clear** | Clear all results |
-| Search field | Filter results by file name or issue text |
-| Severity filter | Show/hide results by severity level |
+| **File** | Asset-relative path to the script |
+| **Line** | Line number of the matched pattern |
+| **Issue** | Human-readable issue description |
+| **Category** | Hot path, Empty lifecycle, or Null safety |
+| **Severity** | Info, Warning, or Critical |
+| **Open** | Opens the Scripts tab at the flagged line |
 
 ---
 
-## Relationship to Optimizer Tab
+## Excluding Paths
 
-The Optimizer tab reads the Scanner results and presents human-readable fix suggestions grouped by category. The Scanner must be run before the Optimizer shows data.
+Paths can be excluded in Project Settings under `ScannerExcludePaths`. Entries are prefix-matched against the asset-relative path.
+
+Example: adding `Assets/ThirdParty` excludes all files under that directory.
+
+---
+
+## Limitations
+
+- Regex-based; cannot detect multi-file or context-dependent patterns.
+- Files inside `Editor/` folders are included unless excluded via settings.
+- Code-generated files may produce false positives if they match issue patterns.
+
+---
+
+## Relationship to Optimizer
+
+Scanner results are the sole input to the Optimizer tab. Re-running the scan refreshes the Optimizer automatically. See [Optimizer tab](optimizer.md).

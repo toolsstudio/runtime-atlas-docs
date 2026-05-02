@@ -1,77 +1,66 @@
 # Keyboard Shortcuts
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Window
 
-| Action | Shortcut / Path |
-|--------|----------------|
-| Open Runtime Atlas window | `Window > Runtime Atlas > Open` |
-| Open Runtime Atlas window | `Ctrl+Alt+R` |
-| Open Project Settings (Runtime Atlas) | `Edit > Project Settings > Runtime Atlas` |
-| Build Demo Scene | `Window > Runtime Atlas > Build Demo Scene` |
+| Action | Menu path | Shortcut |
+|--------|-----------|----------|
+| Open Runtime Atlas | `Window > Runtime Atlas > Open` | `Ctrl+Alt+R` |
 
 ---
 
 ## Tab Navigation
 
-Tabs do not have individual keyboard shortcuts. Click a tab label in the window to switch to it.
+Each entry opens the Runtime Atlas window and navigates directly to the specified tab.
 
-Tab order is fixed:
+| Tab | Menu path |
+|-----|-----------|
+| Inspector | `Window > Runtime Atlas > Tabs > Inspector` |
+| Audio | `Window > Runtime Atlas > Tabs > Audio` |
+| Animator | `Window > Runtime Atlas > Tabs > Animator` |
+| Mixer | `Window > Runtime Atlas > Tabs > Mixer` |
+| Console | `Window > Runtime Atlas > Tabs > Console` |
 
-Row 1: Camera, Audio, Graph, Timeline, Alerts, Profiler, Physics
-
-Row 2: Scanner, Optimizer, Scripts, Inspector, Animator, Mixer, Scene, Report, Console, Materials, About
-
----
-
-## Scanner Tab
-
-| Action | Control |
-|--------|---------|
-| Run scan | **Scan Scripts** button |
-| Clear results | **Clear** button |
-| Open result file | Click the file path in a result row |
+All tab shortcuts appear under `Window > Runtime Atlas > Tabs`. No additional keyboard shortcuts are assigned to individual tabs by default.
 
 ---
 
-## Report Tab
+## Utilities
 
-| Action | Control |
-|--------|---------|
-| Build report from current session | **Generate Preview** button |
-| Export to file | **Export** button (requires Generate Preview first) |
-| Select format | Format toggle buttons (JSON / HTML / Markdown / CSV / DOCX) |
-
----
-
-## Alerts Tab
-
-| Action | Control |
-|--------|---------|
-| Filter by severity | Info / Warning / Critical toggle buttons |
-| Dismiss single alert | **×** button on alert row |
-| Dismiss all alerts | **Clear All** button |
-| Clear dismissed alerts | **Clear Dismissed** button |
+| Action | Menu path |
+|--------|-----------|
+| Build Demo Scene | `Window > Runtime Atlas > Build Demo Scene` |
+| Auto-Config Audio Mixer | `Window > Runtime Atlas > Auto-Config Audio Mixer` |
 
 ---
 
-## Profiler Tab
+## Demo Scene Runtime Keys
 
-| Action | Control |
-|--------|---------|
-| Pause / resume recording | **Pause** / **Resume** button |
-| Clear recorded samples | **Clear** button |
-| Toggle graph stat line | Click stat label in graph legend |
+Active only when the demo scene is running in Play Mode. The Game view must have focus.
+
+| Key | Action |
+|-----|--------|
+| `H` | Toggle the on-screen HUD |
+| `T` | Toggle stress mode on `RADemoStressTester` |
+
+The stress mode key can be changed via the `stressToggleKey` field on the `RADemoStressTester` component in the Inspector.
 
 ---
 
-## Timeline Tab
+## Programmatic Tab Selection
 
-| Action | Control |
-|--------|---------|
-| Scrub playback position | Drag the scrubber handle |
-| Step backward one frame | **◀** button |
-| Step forward one frame | **▶** button |
-| Toggle play/pause | **▶▐▐** button |
+Tabs can be selected from code:
+
+```csharp
+using RuntimeAtlas.Editor;
+using UnityEditor;
+
+// Get or open the window, then select a tab by name (case-insensitive).
+AtlasWindow win = EditorWindow.GetWindow<AtlasWindow>();
+win.SelectTab("Inspector");  // returns bool — false if name not found
+```
+
+Valid tab names: `Camera`, `Audio`, `Graph`, `Timeline`, `Alerts`, `Profiler`, `Physics`, `Scanner`, `Optimizer`, `Scripts`, `Inspector`, `Animator`, `Mixer`, `Scene`, `Report`, `Console`, `Materials`, `About`.

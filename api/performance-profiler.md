@@ -1,84 +1,101 @@
 # Performance Profiler API
+
+**Namespace:** `RuntimeAtlas.Editor`  
+**Assembly:** `RuntimeAtlas.Editor`  
 **Runtime Atlas v1.2.0**
 
 ---
 
-## Assembly
-
-`RuntimeAtlas.Editor` | Namespace: `RuntimeAtlas.Editor`
-
----
-
-## PerfSample
+## `PerformanceProfiler` class
 
 ```csharp
-public readonly struct PerfSample
-{
-    public int   Frame       { get; }
-    public float FrameTimeMs { get; }
-    public float FPS         { get; }
-    public float GCHeapMB    { get; }
-    public float GCAllocKB   { get; }
-    public int   DrawCalls   { get; }
-    public int   Triangles   { get; }
-    public int   Vertices    { get; }
-}
-```
+namespace RuntimeAtlas.Editor
 
-| Field | Source | Unit |
-|-------|--------|------|
-| `Frame` | `Time.frameCount` | — |
-| `FrameTimeMs` | `Time.unscaledDeltaTime * 1000f` | ms |
-| `FPS` | `1000f / FrameTimeMs` | fps |
-| `GCHeapMB` | `GC.GetTotalMemory(false) / (1024f * 1024f)` | MB |
-| `GCAllocKB` | Per-frame delta of `GC.GetTotalMemory` | KB |
-| `DrawCalls` | `UnityStats.drawCalls` | — |
-| `Triangles` | `UnityStats.triangles` | — |
-| `Vertices` | `UnityStats.vertices` | — |
-
-`PerfSample` is a `readonly struct`. It allocates no heap memory.
-
----
-
-## PerformanceProfiler
-
-```csharp
 public sealed class PerformanceProfiler
 ```
 
-**Reading samples:**
+Frame-accurate performance sampler. Records FPS, frame time, GC heap size, GC allocation delta, and rendering statistics per frame. Zero heap allocations in the hot recording path.
 
-```csharp
-public IReadOnlyList<PerfSample> Samples { get; }
-public PerfSample Latest { get; }
-```
-
-`Samples` returns the full recorded ring buffer in chronological order (oldest first). `Latest` returns the most recent sample.
-
-**Playback state:**
-
-```csharp
-public bool IsPaused { get; }
-public void Pause();
-public void Resume();
-public void Clear();
-```
-
-**Configuration:**
-
-```csharp
-public int   MaxSamples         { get; set; }  // default: 300
-public float WarnFrameTimeMs    { get; set; }  // default: 33.3f
-public float CriticalFrameTimeMs{ get; set; }  // default: 50.0f
-public float WarnGCAllocKB      { get; set; }  // default: 64f
-```
-
-Changing `MaxSamples` clears the existing sample buffer.
+Implements `IAlertSource`. Alerts are raised when consecutive slow frames or GC thresholds are exceeded.
 
 ---
 
-## Data Collection
+## Constructor
 
-`PerformanceProfiler.Poll()` is called on `EditorApplication.update` at up to 60 Hz. It is a zero-allocation hot path — `PerfSample` is a struct and the internal ring buffer is a fixed-size array reused across frames.
+```csharp
+public PerformanceProfiler(AlertSystem alertSystem)
+```
 
-`UnityStats` values are only non-zero during Play Mode. In Edit Mode, `DrawCalls`, `Triangles`, and `Vertices` are zero.
+---
+
+## `PerfSample` struct
+
+```csharp
+public struct PerfSample
+```
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `Timestamp` | `double` | Editor time (seconds) when the sample was taken |
+| `FrameMS` | `float` | Frame duration in milliseconds |
+| `FPS` | `float` | Frames per second (`1000 / FrameMS`) |
+| `GCMemMB` | `float` | GC heap size in megabytes |
+| `GCAllocDelta` | `long` | Change in heap allocation since the previous sample (bytes) |
+| `DrawCalls` | `int` | Draw call count (batches) this frame |
+| `Triangles` | `int` | Total rendered triangles |
+| `Vertices` | `int` | Total rendered vertices |
+| `SetPassCalls` | `int` | Shader pass change count |
+| `IsGCSpike` | `bool` | True if `GCAllocDelta > GCSpikeThresholdBytes` |
+| `IsSlowFrame` | `bool` | True if `FrameMS > SlowFrameThresholdMS` |
+
+---
+
+## Configurable Thresholds
+
+All thresholds are read from `RuntimeAtlasSettings` and take effect on the next recorded frame.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `SlowFrameThresholdMS` | `float` | `33.3` | Frame time (ms) above which a frame is `IsSlowFrame` |
+| `CriticalFrameThresholdMS` | `float` | `50.0` | Frame time (ms) for critical slow-frame alert |
+| `GCSpikeThresholdBytes` | `long` | `16384` | GC alloc delta (bytes) that triggers `IsGCSpike` |
+| `GCWarningThresholdBytes` | `long` | `65536` | GC alloc delta for Warning-level alert |
+| `GCCriticalThresholdBytes` | `long` | `262144` | GC alloc delta for Critical-level alert |
+| `SlowFrameAlertCount` | `int` | `5` | Consecutive slow frames before an alert fires |
+| `AlertCooldownSeconds` | `double` | `2.0` | Minimum interval between repeated profiler alerts |
+
+---
+
+## State Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `IsRunning` | `bool` | Whether recording is active |
+| `SampleCount` | `int` | Number of valid samples in the buffer |
+| `Capacity` | `int` | Maximum buffer capacity |
+| `AvgFPS` | `float` | Mean FPS across all recorded samples |
+| `MinFPS` | `float` | Minimum recorded FPS |
+| `MaxFPS` | `float` | Maximum recorded FPS |
+| `AvgFrameMS` | `float` | Mean frame time in milliseconds |
+
+---
+
+## Methods
+
+```csharp
+// Begin recording. Clears any existing buffer.
+public void Start()
+
+// Stop recording. Buffer is preserved.
+public void Stop()
+
+// Stop recording and clear all samples.
+public void Reset()
+
+// Record one frame. Called once per editor update during Play Mode.
+// Zero allocations in this path.
+public void Poll()
+
+// Retrieve a sample by index. 0 = oldest in the circular buffer.
+public PerfSample GetSample(int index)
+```

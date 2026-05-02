@@ -1,85 +1,95 @@
 # Timeline Recorder API
+
+**Namespace:** `RuntimeAtlas.Editor`  
+**Assembly:** `RuntimeAtlas.Editor`  
 **Runtime Atlas v1.2.0**
 
 ---
 
-## Assembly
-
-`RuntimeAtlas.Editor` | Namespace: `RuntimeAtlas.Editor`
-
----
-
-## FrameData
+## `TimelineRecorder` class
 
 ```csharp
-public readonly struct FrameData
-{
-    public int   Frame        { get; }
-    public float FrameTimeMs  { get; }
-    public float FPS          { get; }
-    public float GCHeapMB     { get; }
-    public int   CameraCount  { get; }
-    public int   SourceCount  { get; }
-    public int   AlertCount   { get; }
-}
-```
+namespace RuntimeAtlas.Editor
 
-| Field | Description |
-|-------|-------------|
-| `Frame` | `Time.frameCount` at capture time |
-| `FrameTimeMs` | Frame duration in milliseconds |
-| `FPS` | Instantaneous FPS |
-| `GCHeapMB` | GC heap size in MB at capture |
-| `CameraCount` | Active camera count at capture |
-| `SourceCount` | Active audio source count at capture |
-| `AlertCount` | Non-dismissed alert count at capture |
-
-`FrameData` is a `readonly struct`. No heap allocation.
-
----
-
-## TimelineRecorder
-
-```csharp
 public sealed class TimelineRecorder
 ```
 
-**Reading frames:**
+Records a circular buffer of per-frame cross-system snapshots during Play Mode. The buffer is preserved after recording stops, enabling post-session scrubbing in the Timeline tab.
+
+---
+
+## Constructor
 
 ```csharp
-public int              Count   { get; }
-public int              Capacity{ get; }
-public FrameData        this[int index] { get; }
+public TimelineRecorder(AlertSystem alertSystem)
 ```
 
-`Count` is the number of recorded frames (0 to `Capacity`). `this[index]` accesses frames by index (0 = oldest, Count-1 = newest). The recorder is a circular buffer — once full, oldest frames are overwritten without resizing.
+---
 
-**Playback cursor:**
+## `FrameData` struct
 
 ```csharp
-public int  PlaybackIndex   { get; set; }
-public bool IsPlaying       { get; }
-public void Play();
-public void Pause();
-public void StepForward();
-public void StepBackward();
+public struct FrameData
 ```
 
-`PlaybackIndex` is clamped to `[0, Count - 1]`. Setting it directly is equivalent to scrubbing the timeline slider.
+| Member | Type | Description |
+|--------|------|-------------|
+| `Timestamp` | `double` | Editor time (seconds) when this frame was recorded |
+| `FPS` | `float` | Frames per second at this sample |
+| `MemoryMB` | `float` | GC heap size in megabytes |
+| `ActiveCameras` | `int` | Active `Camera` components this frame |
+| `PlayingAudio` | `int` | Actively playing `AudioSource` components |
+| `AlertCount` | `int` | Total non-dismissed alert count this frame |
+| `CameraFOV` | `float` | FOV of the first active camera (degrees) |
+| `MaxAudioVolume` | `float` | Volume of the loudest actively playing audio source |
 
-**Lifecycle:**
+---
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `IsRecording` | `bool` | Whether the recorder is active |
+| `FrameCount` | `int` | Number of valid frames currently in the buffer |
+| `BufferCapacity` | `int` | Maximum frames the buffer can hold |
+| `ElapsedTime` | `double` | Seconds elapsed since recording started. `0` when not recording. |
+| `StartTime` | `double` | Editor time at which recording began |
+| `LastFPS` | `float` | FPS from the most recently recorded frame |
+
+---
+
+## Methods
 
 ```csharp
-public void RecordFrame(FrameData frame);
-public void Clear();
+// Start recording. Clears any existing buffer.
+public void Start()
+
+// Stop recording. Buffer contents are preserved for playback.
+public void Stop()
+
+// Stop recording and clear all buffered frames.
+public void Reset()
+
+// Record one frame. Called automatically each editor update during Play Mode.
+// Not intended for direct call from user code.
+public void RecordFrame(
+    CameraInspectorNode cameraNode,
+    AudioInspectorNode  audioNode,
+    AlertSystem         alertSystem)
+
+// Return the frame at the given logical index.
+// 0 = oldest frame; FrameCount-1 = most recent.
+public FrameData GetFrame(int index)
 ```
 
-`RecordFrame` is called by `AtlasWindow` on each `EditorApplication.update` during Play Mode. It is zero-allocation.
+---
 
-**Configuration:**
+## Circular Buffer Behaviour
 
-```csharp
-public int Capacity { get; set; }  // default: 300
-```
+When the buffer is full, new frames overwrite the oldest. `FrameCount` equals `BufferCapacity` once the buffer has filled at least once. Buffer capacity is set via `TimelineBufferSize` in Project Settings.
 
-Changing `Capacity` clears the buffer.
+---
+
+## Stats Bar
+
+The **Frame** field in the stats bar shows `TimelineRecorder.FrameCount` — the number of valid frames in the buffer, not `Time.frameCount`.

@@ -2,20 +2,22 @@
 
 ## Documentation License
 
-The documentation in this repository is provided for reference by licensed customers of Runtime Atlas.
+The documentation in this repository is provided under the [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
-No part of this documentation may be reproduced, distributed, or used in competing products without written permission from Tools Studio.
-
-## Software License
-
-Runtime Atlas (the Unity package) is governed by the license agreement provided at the point of purchase on the Unity Asset Store, itch.io, or Gumroad.
-
-By importing and using Runtime Atlas, you agree to the terms of that license agreement. The license is per-seat and non-transferable unless otherwise stated in the purchase agreement.
-
-## Third-Party Components
-
-Runtime Atlas uses Unity Editor APIs (Unity Technologies) and .NET Standard library components. No third-party open-source packages are included.
+You may copy, adapt, and redistribute this documentation for any purpose, provided you give appropriate credit to Tools Studio.
 
 ---
 
-© Tools Studio. All rights reserved.
+## Software License
+
+Runtime Atlas software (source code, compiled assemblies, Unity package assets) is a commercial product governed by a separate End User License Agreement (EULA) delivered at the time of purchase.
+
+The software is **not** included in this repository and is **not** covered by the documentation license above.
+
+Redistribution, resale, or public disclosure of the Runtime Atlas software or its source code is not permitted under the commercial EULA.
+
+---
+
+## Third-Party Notices
+
+Runtime Atlas has no runtime third-party dependencies. The Unity Editor APIs used are covered by the Unity Terms of Service.

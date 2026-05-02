@@ -1,11 +1,12 @@
 # Graph Tab
+
 **Runtime Atlas v1.2.0**
 
 ---
 
 ## Purpose
 
-Displays runtime node relationships between cameras, audio sources, and the alert system as an interactive node graph. The graph updates during Play Mode when the window is visible.
+Displays a live node-link diagram of runtime relationships between the systems Runtime Atlas monitors. Provides a spatial overview of which systems have active connections or are generating alerts.
 
 ---
 
@@ -13,33 +14,36 @@ Displays runtime node relationships between cameras, audio sources, and the aler
 
 | Node type | Represents |
 |-----------|-----------|
-| Camera | A `Camera` component in the scene |
-| Audio Source | An `AudioSource` component |
-| Alert System | The `AlertSystem` singleton |
+| Camera node | Each active `Camera` component |
+| Audio node | Each active `AudioSource` and the `AudioListener` |
+| Alert node | The alert system with current non-dismissed alert count |
+| Profiler node | Current frame time and FPS summary |
 
 ---
 
 ## Edges
 
-Edges between nodes represent logical relationships:
+Edges represent data flow. A camera node connected to the alert system node indicates that camera is the source of one or more active alerts. The alert count on the edge label updates each frame.
 
-- Camera → Alert System: the camera node feeds alerts to the alert system
-- Audio Source → Alert System: the audio node feeds alerts to the alert system
-
----
-
-## Navigation
-
-| Action | Input |
-|--------|-------|
-| Pan | Middle-mouse drag, or right-mouse drag |
-| Zoom | Scroll wheel |
-| Select node | Left-click |
-| Move node | Left-click and drag |
-| Reset layout | **Reset Layout** button |
+Edge style (curved Bezier or straight) is configurable in Project Settings (`CurvedLines`).
 
 ---
 
-## Limitations
+## Interaction
 
-The Graph tab shows the tool's own internal module graph — it does not represent scene graph relationships, prefab hierarchies, or component dependencies. It is a diagnostic view of how Runtime Atlas modules connect to each other.
+| Action | Effect |
+|--------|--------|
+| Click a node | Navigates to the tab corresponding to that system |
+| Drag canvas | Pan the graph view |
+| Scroll | Zoom in/out |
+| Right-click | Context menu (reset view, etc.) |
+
+The Graph tab renders directly in a `BeginArea` without an outer `ScrollView`, preserving drag and zoom behaviour. Scroll input is not intercepted by the window's content scroll.
+
+---
+
+## Notes
+
+- The graph is a diagnostic aid, not a full scene dependency map. It reflects only the systems Runtime Atlas actively monitors.
+- Nodes are repositioned on each repaint if the scene camera or audio source count changes.
+- The graph is read-only in both Edit Mode and Play Mode. System connections are derived from live data, not user configuration.
